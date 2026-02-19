@@ -27,8 +27,8 @@ export default function SummaryCards({
       </Card>
 
       <Card
-        label="Despesas Total"
-        sub={`${expenseCount} item${expenseCount !== 1 ? "s" : ""}`}
+        label="Despesas Totais"
+        sub={`${expenseCount} iten${expenseCount !== 1 ? "s" : ""}`}
       >
         <span className="text-gray-900">{formatBRL(totalExpense)}</span>
       </Card>
