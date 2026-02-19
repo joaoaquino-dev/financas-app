@@ -1,4 +1,6 @@
 Finanças Pessoais
+Teste agora: https://joaoaquino-dev.github.io/financas-app/
+
 Aplicativo de controle financeiro pessoal feito com React, Vite e Tailwind CSS.
 
 Funcionalidades:
