@@ -30,4 +30,4 @@ Tecnologias utilizadas
 
 React
 JavaScript (ES6+)
-CSS3 (mobile-first & responsivo)
+Tailwind CSS (mobile-first & responsivo)
