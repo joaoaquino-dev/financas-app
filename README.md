@@ -1,21 +1,33 @@
-Finanças Pessoais
-Teste agora: https://joaoaquino-dev.github.io/financas-app/
+💰 Finanças Pessoais
 
-Aplicativo de controle financeiro pessoal feito com React, Vite e Tailwind CSS.
+Aplicação web moderna e intuitiva para controle financeiro mensal.
+Permite registrar renda e despesas, editar valores rapidamente e acompanhar o saldo disponível em tempo real.
 
-Funcionalidades:
+🔗 Acesse o app:
+👉 https://joaoaquino-dev.github.io/financas-app/
 
-Cadastro de renda e despesas mensais
-Cálculo automático de saldo e percentual comprometido
-Dados salvos no navegador (localStorage)
-Layout responsivo para mobile
+📊 Funcionalidades
 
-Tecnologias:
+✅ Adicionar renda mensal
+✅ Registrar despesas mensais
+✅ 💾 Salvamento automático no navegador (LocalStorage)
+✅ ✏️ Edição rápida clicando diretamente no valor
+✅ Cálculo automático do saldo disponível
+✅ Indicador de percentual comprometido da renda
+✅ 📱 Interface mobile-first e responsiva
+✅ Atualização dinâmica dos valores
 
-React + Vite
-Tailwind CSS
 
-Como rodar localmente:
+🖥️ Visão geral do painel
+O painel apresenta:
 
-npm install
-npm run dev
+💵 Renda Total
+💸 Despesas Totais
+🟢 Saldo Final disponível
+📉 Percentual comprometido da renda
+
+Tecnologias utilizadas
+
+React
+JavaScript (ES6+)
+CSS3 (mobile-first & responsivo)
