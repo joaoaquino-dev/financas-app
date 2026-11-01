@@ -7,7 +7,7 @@ export default function TransactionTable({ kind, rows, total, month, onAdd, onUp
   const income = kind === 'income';
   const [filter, setFilter] = useState('all');
   const shown = rows.filter(row => filter === 'all' || (filter === 'done' ? (income ? row.received : row.paid) : filter === 'late' ? !!dueStatus(row, month) : !(income ? row.received : row.paid)));
-  return <section className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm min-w-0 self-start">
+  return <section className="soma-transactions bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm min-w-0 self-start">
     <div className="px-4 py-4 border-b bg-slate-50 flex flex-wrap gap-3 items-center justify-between">
       <h2 className="font-semibold flex items-center gap-2"><span className={`w-2 h-2 rounded-full ${income ? 'bg-blue-600' : 'bg-rose-500'}`} />{income ? 'Rendas' : 'Contas e cartões'}</h2>
       <span className="text-sm font-semibold tabular-nums">{formatBRL(total)}</span>

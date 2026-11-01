@@ -1,3 +1,4 @@
+import Brand from './Brand';
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -35,11 +36,11 @@ export default function Auth({ recovery = false, onRecovered, onRecoveryRequeste
       setMessage(err.message?.includes('Invalid login') ? 'E-mail ou senha incorretos.' : err.message?.includes('rate limit') ? 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.' : err.message || 'Não foi possível conectar. Tente novamente.');
     } finally { setBusy(false); }
   }
-  return <main className="max-w-md mx-auto px-5 py-16">
-    <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-5">
-      <div className="text-blue-600 font-bold">R$ · Finanças</div>
-      <h1 className="text-2xl font-bold">Seu próximo mês, organizado.</h1>
-      <p className="text-sm text-gray-500">Planeje suas contas e acompanhe as faturas em qualquer dispositivo.</p>
+  return <main className="soma-auth max-w-md mx-auto px-5 py-16">
+    <div className="soma-auth-card bg-white rounded-2xl shadow-sm border p-6 space-y-5">
+      <Brand />
+      <h1 className="text-2xl font-bold">Um mês de cada vez.</h1>
+      <p className="text-sm text-gray-500">Contas, faturas e planos no mesmo lugar. Entre para continuar de onde parou, no celular ou no computador.</p>
       <form onSubmit={submit} className="space-y-4">
         {!['verify', 'password'].includes(mode) && <label className="block text-sm">E-mail<input required autoComplete="email" type="email" value={email} onChange={e => setEmail(e.target.value)} className="field mt-1" /></label>}
         {['login', 'signup', 'password'].includes(mode) && <label className="block text-sm">{mode === 'password' ? 'Nova senha' : 'Senha'}<input required minLength={8} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} type="password" value={password} onChange={e => setPassword(e.target.value)} className="field mt-1" /></label>}

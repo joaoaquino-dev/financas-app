@@ -1,3 +1,9 @@
+# Soma
+
+**Suas contas, mês a mês.** Controle financeiro pessoal com planejamento mensal, faturas e sincronização entre dispositivos.
+
+Identidade visual: azul profundo `#172b42`, azul de ação `#234c73`, laranja `#f97345` e fundo `#f3f5f7`.
+
 # Finanças pessoais
 
 Planejamento mensal em React + Vite + Tailwind, publicado no GitHub Pages:

@@ -30,9 +30,59 @@
 }
 button:disabled, fieldset:disabled, input:disabled { opacity: .6; cursor: not-allowed; }
 button, input, a { outline-offset: 3px; }
-button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #2563eb; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #234c73; }
 
 input, select { min-width: 0; }
-input[type="checkbox"] { min-width: 1rem; accent-color: #2563eb; }
-summary:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+input[type="checkbox"] { min-width: 1rem; accent-color: #234c73; }
+summary:focus-visible { outline: 2px solid #234c73; outline-offset: 2px; }
 dialog { overscroll-behavior: contain; }
+
+/* Soma: a quiet ledger with a warm, recognizable signature. */
+@layer base {
+  body { background: #f3f5f7; color: #172b42; -webkit-font-smoothing: antialiased; }
+  input, select, button { font: inherit; }
+  input, select { color: #172b42; }
+  ::selection { background: #ffdacb; color: #172b42; }
+}
+@layer components {
+  .btn-primary { background: #234c73; min-height: 44px; border-radius: 10px; transition: background .15s; }
+  .btn-primary:hover { background: #172b42; }
+  .btn-secondary { min-height: 44px; border-color: #dbe2e9; border-radius: 10px; }
+  .field { min-height: 44px; border-color: #ccd6df; }
+}
+.soma-header { border-top: 4px solid #172b42; border-bottom-color: #dfe5eb; }
+.soma-brand { display: flex; gap: 11px; align-items: center; }
+.soma-mark { width: 40px; height: 40px; flex-shrink: 0; }
+.soma-wordmark { display: block; color: #172b42; font-size: 32px; font-weight: 700; letter-spacing: -1.8px; line-height: 1; }
+.soma-dot { color: #d9542b; }
+.soma-tagline { display: block; color: #586b7b; font-size: 11px; font-weight: 400; margin-top: 5px; }
+.soma-eyebrow { font-size: 10px; font-weight: 700; color: #657689; letter-spacing: .16em; margin-bottom: 8px; }
+.soma-page-heading { padding: 10px 0 3px; }
+.soma-page-heading h2 { letter-spacing: -.035em; }
+.soma-savebar { border-color: #dbe2e9; box-shadow: 0 3px 10px #172b4208; }
+.soma-summary { border-color: #dfe5eb; box-shadow: none; padding: 18px 14px; }
+.soma-summary > p:nth-child(2) { letter-spacing: -.04em; }
+.soma-balance { background: #172b42; border-color: #172b42; }
+.soma-balance > p { color: #c7d3df; }
+.soma-balance > p:nth-child(2) { color: #fff; }
+.soma-balance > p.text-rose-700 { color: #ffb9ac; }
+.soma-next-month { border-color: #dfe5eb; border-left: 3px solid #f97345; }
+.soma-transactions { border-color: #dbe2e9; box-shadow: none; }
+.soma-transactions > div:first-child { background: #eaf0f5; }
+.soma-transactions article:focus-within { background: #fbfcfe; }
+.soma-help { border-top: 1px solid #dfe5eb; padding-top: 18px; padding-bottom: 12px; }
+.soma-auth { padding-top: max(36px, 9vh); }
+.soma-auth-card { border-color: #dfe5eb; border-top: 4px solid #172b42; padding: 28px; box-shadow: 0 12px 40px #172b4208; }
+.soma-auth-card > .soma-brand { margin-bottom: 30px; }
+.soma-auth-card h1 { letter-spacing: -.04em; }
+input[type="month"] { min-height: 44px; }
+button, a, summary, label { -webkit-tap-highlight-color: transparent; }
+@media (max-width: 420px) {
+  .soma-savebar { gap: 8px; }
+  .soma-savebar > div { width: 100%; }
+  .soma-savebar .btn-primary { flex: 1; }
+  .soma-page-heading > label { width: 100%; }
+  .soma-next-month > button { width: 100%; }
+  .soma-auth-card { padding: 24px 20px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

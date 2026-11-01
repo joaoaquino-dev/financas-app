@@ -15,5 +15,5 @@ export default function SummaryCards({ totalIncome, totalExpense, balance, pct, 
   </section>;
 }
 function Card({ label, sub, value, color = 'text-slate-900' }) {
-  return <div className="bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-sm min-w-0"><p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">{label}</p><p className={`text-base sm:text-xl font-bold tabular-nums break-words ${color}`}>{value}</p><p className="text-[11px] text-slate-500 mt-1">{sub}</p></div>;
+  return <div className={`soma-summary ${label === 'Saldo previsto' ? 'soma-balance' : ''} bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-sm min-w-0`}><p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">{label}</p><p className={`text-base sm:text-xl font-bold tabular-nums break-words ${color}`}>{value}</p><p className="text-[11px] text-slate-500 mt-1">{sub}</p></div>;
 }
