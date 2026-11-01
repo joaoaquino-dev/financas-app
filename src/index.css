@@ -112,3 +112,47 @@ button, a, summary, label { -webkit-tap-highlight-color: transparent; }
   .soma-row-heading { gap: 4px; }
   .soma-row-name { padding-top: 4px; padding-bottom: 4px; min-height: 36px; }
 }
+
+/* A readable ledger, with configuration tucked behind the row menu. */
+.soma-month-nav { display: flex; gap: 6px; align-items: end; }
+.soma-month-nav > label { min-width: 0; }
+.soma-month-nav input { margin-top: 4px; }
+.soma-month-nav > button:first-child, .soma-month-nav > button:nth-child(3) { font-size: 26px; padding: 0 12px; }
+.soma-savebar { background: transparent; border: 0; box-shadow: none; padding: 0; }
+.soma-savebar > p { font-size: 12px; }
+.soma-savebar .btn-secondary { padding: 4px 10px; min-height: 32px; font-size: 12px; }
+.soma-row { padding: 8px 12px; gap: 5px 16px; }
+.soma-row-heading { gap: 0; align-items: center; }
+.soma-row-name { min-height: 36px; padding: 5px 0; font-size: 15px; }
+.soma-row-heading > div > div { font-size: 11px; }
+.soma-row-heading > button { width: 36px; min-width: 36px; height: 44px; }
+.soma-detail-toggle { font-size: 23px; color: #315d42; border-radius: 8px; }
+.soma-detail-toggle:hover { background: #edf4ef; }
+.soma-row-values { align-self: center; align-items: center; gap: 8px; }
+.soma-row-values > label:first-child { min-width: 80px; }
+.soma-row-values .field { margin: 0; background: #f8faf8; }
+.soma-row-values > label:last-child { padding-left: 10px; padding-right: 10px; }
+.soma-row-done { background: #f4f8f4; }
+.soma-row-done .soma-row-name { color: #54675b; }
+.soma-expanded { padding-top: 8px; padding-bottom: 4px; }
+.soma-expanded > div { margin-bottom: 6px; }
+.soma-forecast { border: 1px solid #dce5df; border-radius: 12px; background: white; }
+.soma-forecast > summary { padding: 12px 14px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.soma-forecast > summary > span { font-size: 11px; font-weight: 400; color: #526859; margin-left: 8px; }
+.soma-forecast th, .soma-forecast td { padding: 10px 8px; border-bottom: 1px solid #e2e9e4; text-align: right; white-space: nowrap; }
+.soma-forecast th:first-child, .soma-forecast td:first-child { text-align: left; white-space: normal; }
+.soma-forecast th { font-size: 11px; color: #526859; }
+.soma-forecast small { font-size: 11px; color: #526859; }
+@media (min-width: 640px) { .soma-row { grid-template-columns: minmax(0, 1fr) 260px; } }
+@media (max-width: 639px) {
+  .soma-row { grid-template-columns: minmax(0, 1fr) 128px; gap: 6px 10px; }
+  .soma-row-heading { flex-wrap: wrap; }
+  .soma-row-heading > div { flex-basis: 100%; }
+  .soma-row-heading > button { height: 36px; }
+  .soma-row-values { flex-direction: column; align-items: stretch; gap: 4px; }
+  .soma-row-values > label:first-child { width: 100%; }
+  .soma-row-values > label:last-child { justify-content: center; border-color: transparent; min-height: 36px; }
+  .soma-month-nav { width: 100%; }
+  .soma-month-nav > label { flex: 1; }
+  .soma-savebar > div { width: auto; }
+}

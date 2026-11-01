@@ -22,6 +22,7 @@ export default function TransactionTable({ kind, rows, total, month, onAdd, onUp
 }
 function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
   const [adding, setAdding] = useState(false);
+  const [expanded, setExpanded] = useState(!row.name);
   const [amount, setAmount] = useState(0);
   const date = dueDate(month, row.dueDay);
   const status = dueStatus(row, month);
@@ -31,7 +32,7 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
     if (row.type === 'card' && row.installments.length && type !== 'card' && !window.confirm('Mudar o tipo remove o detalhamento das parcelas deste cartão. O total informado será mantido. Continuar?')) return;
     onUpdate({ type, installments: type === 'card' ? row.installments : [], ...(type === 'installment' ? { installment: row.installment || { current: 1, total: 1 } } : {}) });
   }
-  return <article className="soma-row">
+  return <article className={`soma-row ${done ? 'soma-row-done' : ''}`}>
     <div className="soma-row-heading flex items-start gap-2">
       <div className="flex-1 min-w-0"><input aria-label="Descrição" maxLength={120} value={row.name} placeholder={income ? 'Ex.: Salário vigilante' : 'Ex.: Casa ou cartão'} onChange={e => onUpdate({ name: e.target.value })} className="soma-row-name w-full min-w-0 rounded-lg py-2 text-base font-medium focus:bg-blue-50" />
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600">
@@ -41,19 +42,21 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
           {status && <span className="text-rose-700 font-semibold">{income ? (status === 'Atrasado' ? 'Recebimento pendente' : 'Previsto para hoje') : status}</span>}
         </div>
       </div>
+      <button type="button" aria-expanded={expanded} aria-label={`Detalhes de ${row.name || 'item'}`} className="soma-detail-toggle" onClick={() => setExpanded(!expanded)}>{expanded ? '−' : '⋯'}</button>
       <button type="button" aria-label={`Remover ${row.name || 'item'}`} onClick={() => { if (window.confirm(`Remover ${row.name || 'este item'} deste mês?`)) onDelete(); }} className="text-slate-400 hover:text-red-600 text-xl w-11 h-11 shrink-0 rounded-lg">×</button>
     </div>
     <div className="soma-row-values flex flex-wrap gap-3 items-end">
-      <label className="flex-1 min-w-[120px] text-xs text-slate-500">{income ? 'Previsão (R$)' : row.type === 'card' ? 'Fatura total (R$)' : 'Valor do mês (R$)'}<MoneyInput label={`Valor de ${row.name || 'item'}`} value={row.value} onChange={value => onUpdate({ value })} className="mt-1" /></label>
+      <label className="flex-1 min-w-[120px] text-xs text-slate-500"><span className="sr-only">{income ? 'Previsão (R$)' : row.type === 'card' ? 'Fatura total (R$)' : 'Valor do mês (R$)'}</span><MoneyInput label={`Valor de ${row.name || 'item'}`} value={row.value} onChange={value => onUpdate({ value })} className="mt-1" /></label>
       {!reviewing && <label className={`flex items-center gap-2 text-sm min-h-11 px-3 rounded-lg border cursor-pointer ${done ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'text-slate-600 border-slate-200'}`}><input type="checkbox" checked={!!done} onChange={e => onUpdate(income ? { received: e.target.checked, actual: e.target.checked ? row.actual ?? row.value : null } : { paid: e.target.checked })} className="w-4 h-4 accent-emerald-600" />{income ? 'Recebido' : 'Pago'}</label>}
     </div>
     {income && row.received && !reviewing && <div className="bg-emerald-50 rounded-lg p-3"><label className="text-xs text-emerald-800">Valor recebido de verdade (R$)<MoneyInput label={`Recebido de ${row.name || 'renda'}`} value={row.actual ?? row.value} onChange={actual => onUpdate({ actual })} className="mt-1" /></label><p className="text-xs text-emerald-800 mt-2">O resumo considera {formatBRL(effectiveIncome(row))}. A previsão fica guardada.</p></div>}
+    {expanded && <div className="soma-expanded">
     {!income && row.type === 'card' && <div className="text-xs px-1 text-slate-500"><span>Parcelas incluídas: {formatBRL(parcels)}</span>{row.value < parcels ? <p role="alert" className="text-amber-800 mt-1">O total da fatura está menor que as parcelas cadastradas. Confira antes de salvar.</p> : <span> · Outras compras: {formatBRL(money(row.value - parcels))}</span>}</div>}
     {!income && row.type === 'card' && <div>
       <button type="button" className="text-sm text-blue-700 min-h-11 px-1" onClick={() => setAdding(!adding)}>{adding ? 'Cancelar soma' : '+ Somar compra'}</button>
       {adding && <form className="flex gap-2 items-end mt-1" onSubmit={e => { e.preventDefault(); if (amount > 0 && row.value + amount <= 999999999) { onUpdate({ value: money(row.value + amount) }); setAdding(false); setAmount(0); } }}><label className="text-xs text-slate-500 flex-1 min-w-0">Valor da compra<MoneyInput autoFocus label="Valor da compra" value={amount} onChange={setAmount} /></label><button className="btn-secondary" disabled={!amount} type="submit">Somar</button></form>}
     </div>}
-    <details className="soma-row-details">
+    <details open className="soma-row-details">
       <summary className="cursor-pointer text-sm text-slate-600">{row.type === 'card' && !income ? `Configurar e ver parcelas (${row.installments.length})` : 'Repetição e vencimento'}</summary>
       <div className="soma-row-settings space-y-4">
         {income ? <label className="flex gap-2 items-center text-sm min-h-11"><input type="checkbox" checked={row.recurring} onChange={e => onUpdate({ recurring: e.target.checked })} />Repetir esta renda no próximo mês</label> : <label className="block text-xs text-slate-500">Como esta despesa continua?<select value={row.type} onChange={e => setType(e.target.value)} className="field mt-1">{Object.entries(EXPENSE_TYPES).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>}
@@ -63,6 +66,7 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
         {!income && row.type === 'variable' && <p className="text-xs text-slate-500">O valor deste mês será sugerido como previsão para o próximo.</p>}
       </div>
     </details>
+    </div>}
   </article>;
 }
 function ParcelFields({ value, onChange }) {

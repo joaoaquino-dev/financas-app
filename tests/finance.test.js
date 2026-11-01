@@ -99,3 +99,15 @@ test('parcela inconsistente e dia inválido são recusados antes de gravar', () 
   assert.throws(() => normalizeData({ income: [], expense: [expense({ type: 'installment', installment: { current: 4, total: 3 } })] }), /parcelas/);
   assert.throws(() => normalizeData({ income: [income({ dueDay: 32 })], expense: [] }), /dia/);
 });
+
+const { forecastInstallments } = await import('../src/utils/finance.js');
+test('previsão exclui avulsas e fixas, respeita última parcela e não altera o mês', () => {
+  const source = { income: [], expense: [expense({type: 'fixed', value: 500}), expense({type: 'installment', value: 100, installment: {current: 2, total: 3}}), expense({type: 'card', value: 900, installments: [parcel({value: 50, current: 1, total: 3}), parcel({value: 70, current: 2, total: 2})]})] };
+  const before = JSON.stringify(source);
+  const rows = forecastInstallments(source, '2026-12');
+  assert.equal(rows[0].month, '2027-01');
+  assert.deepEqual(rows.map(r => r.total), [150, 50, 0, 0, 0, 0]);
+  assert.equal(rows[0].freed, 70);
+  assert.equal(rows[0].ending.length, 1);
+  assert.equal(JSON.stringify(source), before);
+});

@@ -89,3 +89,15 @@ export function prepareNextMonth(raw) {
   });
   return { version: 2, income, expense };
 }
+
+// Projection only: never creates or changes saved months.
+export function forecastInstallments(data, month, count = 6) {
+  const parcels = data.expense.flatMap(row => row.type === 'card' ? row.installments : row.type === 'installment' ? [{ ...row.installment, value: row.value, name: row.name }] : []);
+  const current = money(parcels.reduce((sum, p) => sum + p.value, 0));
+  return Array.from({ length: count }, (_, i) => {
+    const offset = i + 1;
+    const active = parcels.filter(p => p.current + offset <= p.total);
+    const total = money(active.reduce((sum, p) => sum + p.value, 0));
+    return { month: shiftMonth(month, offset), total, freed: money(current - total), ending: parcels.filter(p => p.current + offset === p.total).map(p => p.name) };
+  });
+}

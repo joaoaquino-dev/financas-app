@@ -11,14 +11,14 @@ https://joaoaquino-dev.github.io/financas-app/
 
 ## Como usar
 
-1. Entre na sua conta. No navegador com dados da versão antiga, escolha o mês e use **Importar dados antigos para este mês**. Confira e salve. O original `financasApp_v2` fica preservado no navegador.
+1. Entre na sua conta. No navegador com dados da versão antiga, escolha o mês e use **Importar dados antigos para este mês**. A gravação é automática. O original `financasApp_v2` fica preservado no navegador.
 2. Cadastre rendas e contas do **mês de pagamento**. Os valores são editáveis. Em **Repetição e vencimento**, classifique cada despesa como fixa, variável, parcelada, cartão ou só neste mês. As despesas antigas começam como variáveis, sem alterar os valores salvos.
 3. Para renda recorrente, informe a previsão. Ao marcar **Recebido**, ajuste o **valor recebido de verdade**. O resumo considera esse valor e mantém a previsão original. No próximo mês, o último recebido é sugerido como nova previsão.
 4. Para uma compra parcelada avulsa, use o tipo **Parcelada**, com valor de uma parcela e a parcela atual/total do mês selecionado (ex.: 4/10).
 5. Para um cartão, informe a **fatura total**, já incluindo as parcelas. Dentro de **Configurar e ver parcelas**, cadastre e edite as compras parceladas. O cadastro não soma ao total por padrão; só marque a opção de somar se a parcela ainda não estiver incluída. Remover ou editar um detalhamento não muda o total informado da fatura. Não cadastre a mesma parcela também como despesa separada.
 6. **Somar compra** acrescenta uma compra avulsa ao total atual. A fatura total continua podendo ser substituída manualmente. A máscara usa centavos: digitar `10000` resulta em R$ 100,00.
 7. Informe vencimentos opcionais, marque contas como **Pago** e use os filtros para ver pendentes, quitadas ou vencidas. Dias 29–31 são ajustados ao último dia dos meses mais curtos. Não há pagamentos parciais nem controle de saldo bancário.
-8. Clique em **Salvar alterações**. Depois, use **Preparar próximo mês**: revise os valores, vencimentos e itens sugeridos antes de confirmar. A confirmação já salva o novo mês. O mês de origem não é alterado e um mês existente nunca é sobrescrito por esse fluxo.
+8. As alterações são salvas automaticamente após uma breve pausa. Aguarde **Salvo automaticamente**. Depois, use **Preparar próximo mês**: revise os valores, vencimentos e itens sugeridos antes de confirmar. A confirmação já salva o novo mês. O mês de origem não é alterado e um mês existente nunca é sobrescrito por esse fluxo.
 
 ### O que vai para o próximo mês
 
@@ -30,9 +30,9 @@ https://joaoaquino-dev.github.io/financas-app/
 
 O resumo mostra rendas consideradas, despesas totais, saldo previsto e valores que faltam pagar/receber. O saldo previsto não é o saldo de uma conta bancária. Marcar uma conta paga não remove essa despesa do planejamento.
 
-No outro dispositivo, use a mesma conta. O app carrega os dados ao abrir e atualiza ao voltar à aba e a cada 30 segundos, sem edições locais pendentes. Edições pendentes recebem aviso antes de sair, trocar de mês ou recarregar. Sem conexão, permanecem na tela, mas precisam ser salvas antes de fechar; não há edição offline persistente.
+No outro dispositivo, use a mesma conta. O app carrega os dados ao abrir e atualiza ao voltar à aba e a cada 30 segundos, sem edições locais pendentes. A navegação por setas e o botão Hoje salvam alterações pendentes antes de mudar de mês; falhas impedem a navegação. Edições pendentes recebem aviso antes de fechar ou recarregar. Sem conexão, permanecem na tela, mas precisam ser salvas antes de fechar; não há edição offline persistente.
 
-**Exportar backup** inclui rascunhos, parcelas, vencimentos e recebimentos. **Importar backup** aceita arquivos novos e antigos. A importação substitui os itens do mês selecionado após confirmação e exige salvar em seguida.
+**Exportar backup** inclui rascunhos, parcelas, vencimentos e recebimentos. **Importar backup** aceita arquivos novos e antigos. A importação substitui os itens do mês selecionado após confirmação e salva automaticamente.
 
 ## Banco e autenticação
 
@@ -59,3 +59,7 @@ npm run build
 Configuração pública padrão em `src/lib/supabase.js`. Para outro projeto, defina `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` em `.env.local` e aplique o schema no projeto de destino.
 
 O workflow `.github/workflows/deploy.yml` continua publicando `main` no GitHub Pages, com a base `/financas-app/`. Não é necessário migrar hospedagem.
+
+### Acompanhamento
+
+Use **⋯** na conta para abrir repetição, vencimento e parcelas. O valor e o pagamento ficam acessíveis na linha. A **Previsão de parcelas** projeta seis meses apenas com as parcelas cadastradas no mês selecionado; exclui fixas e novas compras e não consulta nem substitui os meses já salvos.

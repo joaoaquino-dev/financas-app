@@ -9,6 +9,10 @@ export function useFinanceData(userId, month) {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const editVersion = useRef(0);
+  const activeMonth = useRef(month); activeMonth.current = month;
   const generation = useRef(0);
   const load = useCallback(async (quiet = false) => {
     const gen = ++generation.current;
@@ -21,33 +25,45 @@ export function useFinanceData(userId, month) {
   }, [userId, month]);
   useEffect(() => { load(); return () => { generation.current++; }; }, [load]);
   useEffect(() => {
-    if (dirty || busy || !loaded) return;
+    if (dirty || busy || saving || !loaded) return;
     const refresh = () => { if (document.visibilityState === 'visible') load(true); };
     window.addEventListener('focus', refresh);
     const timer = setInterval(refresh, 30000);
     return () => { window.removeEventListener('focus', refresh); clearInterval(timer); };
-  }, [dirty, busy, loaded, load]);
+  }, [dirty, busy, saving, loaded, load]);
   useEffect(() => {
     if (!dirty) return;
     const warn = event => { event.preventDefault(); event.returnValue = ''; };
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
-  function change(next) { generation.current++; setData(next); setDirty(true); setError(''); }
+  function change(next) { editVersion.current++; generation.current++; setData(next); setDirty(true); setError(''); }
   function add(kind) { change({ ...data, [kind]: [...data[kind], newRow(kind)] }); }
   function update(kind, id, patch) { change({ ...data, [kind]: data[kind].map(row => row.id === id ? { ...row, ...patch } : row) }); }
   function remove(kind, id) { change({ ...data, [kind]: data[kind].filter(row => row.id !== id) }); }
   async function save() {
-    setBusy(true); setError('');
+    if (savingRef.current || busy || !loaded) return false;
+    if (!dirty) return true;
+    savingRef.current = true; setSaving(true); setError('');
+    const version = editVersion.current;
     try {
       const canonical = normalizeData(data, { regenerateIds: false });
       const { data: nextRevision, error: err } = await supabase.rpc('save_finance_month', { p_month: month, p_data: canonical, p_revision: revision });
       if (err) throw err;
-      setData(canonical); setRevision(nextRevision); setDirty(false);
+      if (activeMonth.current !== month) return false;
+      setRevision(nextRevision);
+      if (editVersion.current === version) { setData(canonical); setDirty(false); }
+      return editVersion.current === version;
     } catch (err) {
       setError(err.message?.includes('CONFLICT') ? 'Este mês mudou em outro dispositivo. Exporte suas alterações antes de recarregar e conferir os valores.' : err instanceof Error ? err.message : 'Não foi possível salvar. Suas alterações continuam na tela. Verifique a conexão e tente novamente.');
-    } finally { setBusy(false); }
+      return false;
+    } finally { savingRef.current = false; setSaving(false); }
   }
+  useEffect(() => {
+    if (!dirty || busy || saving || !loaded || error) return;
+    const timer = setTimeout(() => { save(); }, 900);
+    return () => clearTimeout(timer);
+  }, [data, dirty, busy, saving, loaded, error, month, revision]);
   async function createMonth(targetMonth, draft) {
     setBusy(true); setError('');
     try {
@@ -60,5 +76,5 @@ export function useFinanceData(userId, month) {
       return false;
     } finally { setBusy(false); }
   }
-  return { ...data, data, busy, dirty, error, loaded, load, save, change, add, update, remove, createMonth, ...totals(data) };
+  return { ...data, data, busy, saving, dirty, error, loaded, load, save, change, add, update, remove, createMonth, ...totals(data) };
 }
