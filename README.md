@@ -2,7 +2,7 @@
 
 **Suas contas, mês a mês.** Controle financeiro pessoal com planejamento mensal, faturas e sincronização entre dispositivos.
 
-Identidade visual: azul profundo `#172b42`, azul de ação `#234c73`, laranja `#f97345` e fundo `#f3f5f7`.
+Identidade visual: verde profundo `#123c2d`, verde de ação `#14613e`, verde claro `#9cdb72` e fundo `#f4f7f5`.
 
 # Finanças pessoais
 
