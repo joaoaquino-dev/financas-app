@@ -28,7 +28,7 @@ export default function SummaryCards({
 
       <Card
         label="Despesas Totais"
-        sub={`${expenseCount} iten${expenseCount !== 1 ? "s" : ""}`}
+        sub={`${expenseCount} ${expenseCount === 1 ? "item" : "itens"}`}
       >
         <span className="text-gray-900">{formatBRL(totalExpense)}</span>
       </Card>
@@ -46,11 +46,11 @@ export default function SummaryCards({
 
 function Card({ label, sub, children }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl px-5 py-4 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
+    <div className="bg-white border border-gray-200 rounded-xl px-3 sm:px-5 py-4 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
       <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-1">
         {label}
       </p>
-      <p className="text-xl font-bold font-mono leading-tight">{children}</p>
+      <p className="text-lg sm:text-xl font-bold font-mono leading-tight">{children}</p>
       <p className="text-xs text-gray-400 mt-1">{sub}</p>
     </div>
   );
