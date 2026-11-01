@@ -25,9 +25,14 @@
 
 @layer components {
   .field { @apply block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-base; }
-  .btn-primary { @apply rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700; }
-  .btn-secondary { @apply rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50; }
+  .btn-primary { @apply rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700; }
+  .btn-secondary { @apply rounded-lg border border-gray-200 bg-white px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50; }
 }
 button:disabled, fieldset:disabled, input:disabled { opacity: .6; cursor: not-allowed; }
 button, input, a { outline-offset: 3px; }
 button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #2563eb; }
+
+input, select { min-width: 0; }
+input[type="checkbox"] { min-width: 1rem; accent-color: #2563eb; }
+summary:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+dialog { overscroll-behavior: contain; }

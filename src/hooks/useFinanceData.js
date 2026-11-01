@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { emptyMonth, normalizeData, previousMonth } from '../utils/finance';
+import { emptyMonth, normalizeData, newRow, totals } from '../utils/finance';
 
 export function useFinanceData(userId, month) {
   const [data, setData] = useState(emptyMonth);
@@ -16,7 +16,7 @@ export function useFinanceData(userId, month) {
     const { data: row, error: err } = await supabase.from('finance_months').select('data,revision').eq('user_id', userId).eq('month', month).maybeSingle();
     if (gen !== generation.current) return;
     if (err) setError('Não foi possível carregar os dados. Verifique sua conexão e tente atualizar.');
-    else { setData(row?.data || emptyMonth()); setRevision(row?.revision || 0); setDirty(false); setError(''); setLoaded(true); }
+    else { let next; try { next = row ? normalizeData(row.data, { regenerateIds: false }) : emptyMonth(); } catch { setError('Os dados recebidos são inválidos. Exporte um backup antes de alterar.'); setBusy(false); return; } setData(next); setRevision(row?.revision || 0); setDirty(false); setError(''); setLoaded(true); }
     setBusy(false);
   }, [userId, month]);
   useEffect(() => { load(); return () => { generation.current++; }; }, [load]);
@@ -34,30 +34,31 @@ export function useFinanceData(userId, month) {
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
   function change(next) { generation.current++; setData(next); setDirty(true); setError(''); }
-  function add(kind) { change({ ...data, [kind]: [...data[kind], { id: crypto.randomUUID(), name: '', value: 0 }] }); }
-  function update(kind, id, field, value) { change({ ...data, [kind]: data[kind].map(row => row.id === id ? { ...row, [field]: value } : row) }); }
+  function add(kind) { change({ ...data, [kind]: [...data[kind], newRow(kind)] }); }
+  function update(kind, id, patch) { change({ ...data, [kind]: data[kind].map(row => row.id === id ? { ...row, ...patch } : row) }); }
   function remove(kind, id) { change({ ...data, [kind]: data[kind].filter(row => row.id !== id) }); }
   async function save() {
     setBusy(true); setError('');
     try {
-      normalizeData(data);
-      const { data: nextRevision, error: err } = await supabase.rpc('save_finance_month', { p_month: month, p_data: data, p_revision: revision });
+      const canonical = normalizeData(data, { regenerateIds: false });
+      const { data: nextRevision, error: err } = await supabase.rpc('save_finance_month', { p_month: month, p_data: canonical, p_revision: revision });
       if (err) throw err;
-      setRevision(nextRevision); setDirty(false);
+      setData(canonical); setRevision(nextRevision); setDirty(false);
     } catch (err) {
-      setError(err.message?.includes('CONFLICT') ? 'Este mês mudou em outro dispositivo. Exporte suas alterações antes de recarregar e conferir os valores.' : 'Não foi possível salvar. Suas alterações continuam na tela. Verifique a conexão e tente novamente.');
+      setError(err.message?.includes('CONFLICT') ? 'Este mês mudou em outro dispositivo. Exporte suas alterações antes de recarregar e conferir os valores.' : err instanceof Error ? err.message : 'Não foi possível salvar. Suas alterações continuam na tela. Verifique a conexão e tente novamente.');
     } finally { setBusy(false); }
   }
-  async function copyPrevious() {
-    setBusy(true);
-    const { data: row, error: err } = await supabase.from('finance_months').select('data').eq('user_id', userId).eq('month', previousMonth(month)).maybeSingle();
-    if (err) setError('Não foi possível copiar o mês anterior.');
-    else if (!row) setError('O mês anterior ainda não tem dados salvos.');
-    else change(normalizeData(row.data));
-    setBusy(false);
+  async function createMonth(targetMonth, draft) {
+    setBusy(true); setError('');
+    try {
+      const canonical = normalizeData(draft, { regenerateIds: false });
+      const { error: err } = await supabase.rpc('save_finance_month', { p_month: targetMonth, p_data: canonical, p_revision: 0 });
+      if (err) throw err;
+      return true;
+    } catch (err) {
+      setError(err.message?.includes('CONFLICT') ? 'Esse mês já existe. Nada foi substituído. Feche a revisão e abra o mês pelo seletor.' : err.message || 'Não foi possível criar o mês. Tente novamente.');
+      return false;
+    } finally { setBusy(false); }
   }
-  const totalIncome = data.income.reduce((sum, row) => sum + row.value, 0);
-  const totalExpense = data.expense.reduce((sum, row) => sum + row.value, 0);
-  return { ...data, data, busy, dirty, error, loaded, load, save, change, add, update, remove, copyPrevious,
-    totalIncome, totalExpense, balance: totalIncome - totalExpense, pct: totalIncome ? totalExpense / totalIncome * 100 : 0 };
+  return { ...data, data, busy, dirty, error, loaded, load, save, change, add, update, remove, createMonth, ...totals(data) };
 }

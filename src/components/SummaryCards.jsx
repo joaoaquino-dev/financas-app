@@ -1,57 +1,19 @@
-import { formatBRL } from "../utils/currency";
+import { formatBRL } from '../utils/currency';
 
-export default function SummaryCards({
-  totalIncome,
-  totalExpense,
-  balance,
-  pct,
-  incomeCount,
-  expenseCount,
-}) {
-  const balanceColor = balance >= 0 ? "text-emerald-700" : "text-red-600";
-
-  const pctColor =
-    pct > 100
-      ? "text-red-600"
-      : pct > 80
-        ? "text-amber-600"
-        : "text-emerald-700";
-
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card
-        label="Renda Total"
-        sub={`${incomeCount} fonte${incomeCount !== 1 ? "s" : ""}`}
-      >
-        <span className="text-gray-900">{formatBRL(totalIncome)}</span>
-      </Card>
-
-      <Card
-        label="Despesas Totais"
-        sub={`${expenseCount} ${expenseCount === 1 ? "item" : "itens"}`}
-      >
-        <span className="text-gray-900">{formatBRL(totalExpense)}</span>
-      </Card>
-
-      <Card label="Saldo Final" sub="disponível">
-        <span className={balanceColor}>{formatBRL(balance)}</span>
-      </Card>
-
-      <Card label="Comprometido" sub="da renda total">
-        <span className={pctColor}>{pct.toFixed(1)}%</span>
-      </Card>
+export default function SummaryCards({ totalIncome, totalExpense, balance, pct, toReceive, toPay, receivedTotal, paidTotal }) {
+  return <section aria-label="Resumo do mês" className="space-y-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <Card label="Rendas do mês" sub="recebidas + previstas" value={formatBRL(totalIncome)} />
+      <Card label="Despesas do mês" sub="pagas + pendentes" value={formatBRL(totalExpense)} />
+      <Card label="Saldo previsto" sub="não é o saldo bancário" value={formatBRL(balance)} color={balance < 0 ? 'text-rose-700' : 'text-emerald-700'} />
+      <Card label="Comprometido" sub="das rendas consideradas" value={`${pct.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`} color={pct > 100 ? 'text-rose-700' : pct > 80 ? 'text-amber-700' : 'text-emerald-700'} />
     </div>
-  );
+    <div className="grid sm:grid-cols-2 gap-3">
+      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm flex flex-wrap gap-2 justify-between"><span className="text-blue-900">Falta receber <strong>{formatBRL(toReceive)}</strong></span><span className="text-blue-800 text-xs self-center">Recebido: {formatBRL(receivedTotal)}</span></div>
+      <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-sm flex flex-wrap gap-2 justify-between"><span className="text-amber-900">Falta pagar <strong>{formatBRL(toPay)}</strong></span><span className="text-amber-800 text-xs self-center">Pago: {formatBRL(paidTotal)}</span></div>
+    </div>
+  </section>;
 }
-
-function Card({ label, sub, children }) {
-  return (
-    <div className="bg-white border border-gray-200 rounded-xl px-3 sm:px-5 py-4 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-1">
-        {label}
-      </p>
-      <p className="text-lg sm:text-xl font-bold font-mono leading-tight">{children}</p>
-      <p className="text-xs text-gray-400 mt-1">{sub}</p>
-    </div>
-  );
+function Card({ label, sub, value, color = 'text-slate-900' }) {
+  return <div className="bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-sm min-w-0"><p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">{label}</p><p className={`text-base sm:text-xl font-bold tabular-nums break-words ${color}`}>{value}</p><p className="text-[11px] text-slate-500 mt-1">{sub}</p></div>;
 }
