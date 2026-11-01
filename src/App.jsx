@@ -68,7 +68,7 @@ function Finance({ user }) {
       <SummaryCards {...f} />
       {f.expense.some(row => dueStatus(row, month)) && <p className="text-sm text-rose-800 bg-rose-50 p-3 rounded-xl">Há contas vencidas ou vencendo hoje. Use o filtro em Contas e cartões para conferir.</p>}
       <div className="soma-next-month bg-white border rounded-xl p-4 flex flex-wrap justify-between items-center gap-3"><div><h3 className="font-semibold text-sm">Deixe o próximo mês encaminhado</h3><p className="text-xs text-slate-500 mt-1">Reaproveite contas, avance as parcelas e revise tudo antes de criar.</p></div><button className="btn-primary" disabled={f.busy || f.dirty || isEmpty} onClick={() => setReview(true)}>Preparar próximo mês</button>{f.dirty && <p className="text-xs text-amber-700 w-full">Salve as alterações deste mês para preparar o próximo.</p>}</div>
-      <fieldset disabled={f.busy} className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
+      <fieldset disabled={f.busy} className="grid grid-cols-1 gap-4 min-w-0">
         {['income', 'expense'].map(kind => <TransactionTable key={`${month}-${kind}`} kind={kind} month={month} rows={f[kind]} total={kind === 'income' ? f.totalIncome : f.totalExpense} onAdd={() => f.add(kind)} onUpdate={(id, patch) => f.update(kind, id, patch)} onDelete={id => f.remove(kind, id)} />)}
       </fieldset>
       {isEmpty && <p className="text-sm text-slate-500">Já tem um mês preenchido? Abra esse mês no seletor e use “Preparar próximo mês”. Ou cadastre suas contas abaixo de cada seção.</p>}

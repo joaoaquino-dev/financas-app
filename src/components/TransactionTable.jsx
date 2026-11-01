@@ -31,10 +31,10 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
     if (row.type === 'card' && row.installments.length && type !== 'card' && !window.confirm('Mudar o tipo remove o detalhamento das parcelas deste cartão. O total informado será mantido. Continuar?')) return;
     onUpdate({ type, installments: type === 'card' ? row.installments : [], ...(type === 'installment' ? { installment: row.installment || { current: 1, total: 1 } } : {}) });
   }
-  return <article className="border-t border-slate-100 p-4 space-y-3">
-    <div className="flex items-start gap-2">
-      <div className="flex-1 min-w-0"><input aria-label="Descrição" maxLength={120} value={row.name} placeholder={income ? 'Ex.: Salário vigilante' : 'Ex.: Casa ou cartão'} onChange={e => onUpdate({ name: e.target.value })} className="w-full min-w-0 rounded-lg px-2 py-2 text-base font-medium focus:bg-blue-50" />
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-2 text-xs text-slate-500">
+  return <article className="soma-row">
+    <div className="soma-row-heading flex items-start gap-2">
+      <div className="flex-1 min-w-0"><input aria-label="Descrição" maxLength={120} value={row.name} placeholder={income ? 'Ex.: Salário vigilante' : 'Ex.: Casa ou cartão'} onChange={e => onUpdate({ name: e.target.value })} className="soma-row-name w-full min-w-0 rounded-lg py-2 text-base font-medium focus:bg-blue-50" />
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600">
           <span>{income ? (row.recurring ? 'Recorrente · valor ajustável' : 'Só neste mês') : EXPENSE_TYPES[row.type]}</span>
           {!income && row.type === 'installment' && <span>{row.installment.current}/{row.installment.total}</span>}
           {date && <span>{income ? 'Receber' : 'Vence'} {date.slice(8)}/{date.slice(5, 7)}</span>}
@@ -43,7 +43,7 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
       </div>
       <button type="button" aria-label={`Remover ${row.name || 'item'}`} onClick={() => { if (window.confirm(`Remover ${row.name || 'este item'} deste mês?`)) onDelete(); }} className="text-slate-400 hover:text-red-600 text-xl w-11 h-11 shrink-0 rounded-lg">×</button>
     </div>
-    <div className="flex flex-wrap gap-3 items-end">
+    <div className="soma-row-values flex flex-wrap gap-3 items-end">
       <label className="flex-1 min-w-[120px] text-xs text-slate-500">{income ? 'Previsão (R$)' : row.type === 'card' ? 'Fatura total (R$)' : 'Valor do mês (R$)'}<MoneyInput label={`Valor de ${row.name || 'item'}`} value={row.value} onChange={value => onUpdate({ value })} className="mt-1" /></label>
       {!reviewing && <label className={`flex items-center gap-2 text-sm min-h-11 px-3 rounded-lg border cursor-pointer ${done ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'text-slate-600 border-slate-200'}`}><input type="checkbox" checked={!!done} onChange={e => onUpdate(income ? { received: e.target.checked, actual: e.target.checked ? row.actual ?? row.value : null } : { paid: e.target.checked })} className="w-4 h-4 accent-emerald-600" />{income ? 'Recebido' : 'Pago'}</label>}
     </div>
@@ -53,9 +53,9 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
       <button type="button" className="text-sm text-blue-700 min-h-11 px-1" onClick={() => setAdding(!adding)}>{adding ? 'Cancelar soma' : '+ Somar compra'}</button>
       {adding && <form className="flex gap-2 items-end mt-1" onSubmit={e => { e.preventDefault(); if (amount > 0 && row.value + amount <= 999999999) { onUpdate({ value: money(row.value + amount) }); setAdding(false); setAmount(0); } }}><label className="text-xs text-slate-500 flex-1 min-w-0">Valor da compra<MoneyInput autoFocus label="Valor da compra" value={amount} onChange={setAmount} /></label><button className="btn-secondary" disabled={!amount} type="submit">Somar</button></form>}
     </div>}
-    <details className="rounded-lg bg-slate-50 border border-slate-100">
-      <summary className="cursor-pointer px-3 py-3 text-sm text-slate-600">{row.type === 'card' && !income ? `Configurar e ver parcelas (${row.installments.length})` : 'Repetição e vencimento'}</summary>
-      <div className="px-3 pb-3 space-y-4">
+    <details className="soma-row-details">
+      <summary className="cursor-pointer text-sm text-slate-600">{row.type === 'card' && !income ? `Configurar e ver parcelas (${row.installments.length})` : 'Repetição e vencimento'}</summary>
+      <div className="soma-row-settings space-y-4">
         {income ? <label className="flex gap-2 items-center text-sm min-h-11"><input type="checkbox" checked={row.recurring} onChange={e => onUpdate({ recurring: e.target.checked })} />Repetir esta renda no próximo mês</label> : <label className="block text-xs text-slate-500">Como esta despesa continua?<select value={row.type} onChange={e => setType(e.target.value)} className="field mt-1">{Object.entries(EXPENSE_TYPES).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>}
         <label className="block text-xs text-slate-500">{income ? 'Dia previsto de recebimento' : 'Dia do vencimento'} (opcional)<input aria-label={`Dia de ${row.name || 'item'}`} type="number" min="1" max="31" inputMode="numeric" value={row.dueDay ?? ''} onChange={e => onUpdate({ dueDay: e.target.value === '' ? null : Number(e.target.value) })} placeholder="Ex.: 10" className="field mt-1" /></label>
         {!income && row.type === 'installment' && <><ParcelFields value={row.installment} onChange={installment => onUpdate({ installment })} /><p className="text-xs text-slate-500">Informe a parcela do mês selecionado. O valor acima é de uma parcela, não da compra inteira.</p></>}
