@@ -49,7 +49,7 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
     </div>
     {income && row.received && !reviewing && <div className="bg-emerald-50 rounded-lg p-3"><label className="text-xs text-emerald-800">Valor recebido de verdade (R$)<MoneyInput label={`Recebido de ${row.name || 'renda'}`} value={row.actual ?? row.value} onChange={actual => onUpdate({ actual })} className="mt-1" /></label><p className="text-xs text-emerald-800 mt-2">O resumo considera {formatBRL(effectiveIncome(row))}. A previsão fica guardada.</p></div>}
     {!income && row.type === 'card' && <div className="text-xs px-1 text-slate-500"><span>Parcelas incluídas: {formatBRL(parcels)}</span>{row.value < parcels ? <p role="alert" className="text-amber-800 mt-1">O total da fatura está menor que as parcelas cadastradas. Confira antes de salvar.</p> : <span> · Outras compras: {formatBRL(money(row.value - parcels))}</span>}</div>}
-    {!income && <div>
+    {!income && row.type === 'card' && <div>
       <button type="button" className="text-sm text-blue-700 min-h-11 px-1" onClick={() => setAdding(!adding)}>{adding ? 'Cancelar soma' : '+ Somar compra'}</button>
       {adding && <form className="flex gap-2 items-end mt-1" onSubmit={e => { e.preventDefault(); if (amount > 0 && row.value + amount <= 999999999) { onUpdate({ value: money(row.value + amount) }); setAdding(false); setAmount(0); } }}><label className="text-xs text-slate-500 flex-1 min-w-0">Valor da compra<MoneyInput autoFocus label="Valor da compra" value={amount} onChange={setAmount} /></label><button className="btn-secondary" disabled={!amount} type="submit">Somar</button></form>}
     </div>}
