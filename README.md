@@ -1,65 +1,83 @@
 # Soma
 
-**Suas contas, mês a mês.** Controle financeiro pessoal com planejamento mensal, faturas e sincronização entre dispositivos.
+**Suas contas, mês a mês.** Planejamento financeiro pessoal com login, parcelas, cartões e sincronização entre dispositivos.
 
-Identidade visual: verde profundo `#123c2d`, verde de ação `#14613e`, verde claro `#9cdb72` e fundo `#f4f7f5`.
+[Acessar o app](https://joaoaquino-dev.github.io/financas-app/) · [Guia de uso](docs/GUIA-DE-USO.md)
 
-# Finanças pessoais
+![Resumo mensal do Soma: rendas, despesas, saldo previsto e percentual comprometido](docs/screenshots/resumo-mensal.png)
 
-Planejamento mensal em React + Vite + Tailwind, publicado no GitHub Pages:
-https://joaoaquino-dev.github.io/financas-app/
+> **English:** Soma is a personal finance planner built with React, Tailwind CSS and Supabase. It has email login, monthly planning, card installments and cross-device sync with conflict protection. The detailed documentation below is in Portuguese.
 
-## Como usar
+## Sobre o projeto
 
-1. Entre na sua conta. No navegador com dados da versão antiga, escolha o mês e use **Importar dados antigos para este mês**. A gravação é automática. O original `financasApp_v2` fica preservado no navegador.
-2. Cadastre rendas e contas do **mês de pagamento**. Os valores são editáveis. Em **Repetição e vencimento**, classifique cada despesa como fixa, variável, parcelada, cartão ou só neste mês. As despesas antigas começam como variáveis, sem alterar os valores salvos.
-3. Para renda recorrente, informe a previsão. Ao marcar **Recebido**, ajuste o **valor recebido de verdade**. O resumo considera esse valor e mantém a previsão original. No próximo mês, o último recebido é sugerido como nova previsão.
-4. Para uma compra parcelada avulsa, use o tipo **Parcelada**, com valor de uma parcela e a parcela atual/total do mês selecionado (ex.: 4/10).
-5. Para um cartão, informe a **fatura total**, já incluindo as parcelas. Dentro de **Configurar e ver parcelas**, cadastre e edite as compras parceladas. O cadastro não soma ao total por padrão; só marque a opção de somar se a parcela ainda não estiver incluída. Remover ou editar um detalhamento não muda o total informado da fatura. Não cadastre a mesma parcela também como despesa separada.
-6. **Somar compra** acrescenta uma compra avulsa ao total atual. A fatura total continua podendo ser substituída manualmente. A máscara usa centavos: digitar `10000` resulta em R$ 100,00.
-7. Informe vencimentos opcionais, marque contas como **Pago** e use os filtros para ver pendentes, quitadas ou vencidas. Dias 29–31 são ajustados ao último dia dos meses mais curtos. Não há pagamentos parciais nem controle de saldo bancário.
-8. As alterações são salvas automaticamente após uma breve pausa. Aguarde **Salvo automaticamente**. Depois, use **Preparar próximo mês**: revise os valores, vencimentos e itens sugeridos antes de confirmar. A confirmação já salva o novo mês. O mês de origem não é alterado e um mês existente nunca é sobrescrito por esse fluxo.
+Comecei o Soma como um controle financeiro simples, que guardava os dados no `localStorage`. Uso o app no dia a dia há meses e, com o tempo, ele passou a ter login e banco de dados, para que o mesmo planejamento fique disponível no celular e no computador.
 
-### O que vai para o próximo mês
+O foco é responder, mês a mês: quanto entra, quanto sai, o que já foi pago e o que ainda vem em parcelas.
 
-- **Fixa e variável:** repetem o valor como previsão, com vencimento e status pendente.
-- **Parcelada:** avança uma parcela; deixa de aparecer após a última.
-- **Cartão:** continua com total igual à soma das parcelas restantes. Compras avulsas não se repetem. Cartões sem parcelas restantes começam zerados.
-- **Só neste mês:** não se repete.
-- **Renda recorrente:** usa o último recebido ou, se não recebeu, a previsão. Começa como não recebida.
+## Funcionalidades
 
-O resumo mostra rendas consideradas, despesas totais, saldo previsto e valores que faltam pagar/receber. O saldo previsto não é o saldo de uma conta bancária. Marcar uma conta paga não remove essa despesa do planejamento.
+- Planejamento por mês, com rendas e contas fixas, variáveis, parceladas, de cartão ou pontuais.
+- Resumo com rendas, despesas, saldo previsto e percentual comprometido.
+- Renda recorrente com valor previsto e valor recebido de verdade.
+- Cartões com fatura total e detalhamento das parcelas.
+- Previsão das parcelas dos próximos 6 meses.
+- "Preparar próximo mês": repassa contas e avança parcelas, com revisão antes de salvar. Um mês já existente nunca é sobrescrito.
+- Salvamento automático, com aviso antes de fechar a página se houver edições pendentes.
+- Exportação e importação de backup em JSON, aceitando também arquivos de versões antigas.
+- Login por e-mail e sincronização entre dispositivos.
 
-No outro dispositivo, use a mesma conta. O app carrega os dados ao abrir e atualiza ao voltar à aba e a cada 30 segundos, sem edições locais pendentes. A navegação por setas e o botão Hoje salvam alterações pendentes antes de mudar de mês; falhas impedem a navegação. Edições pendentes recebem aviso antes de fechar ou recarregar. Sem conexão, permanecem na tela, mas precisam ser salvas antes de fechar; não há edição offline persistente.
+![Rendas e contas do mês no Soma, com campos de valor e marcação de pago](docs/screenshots/rendas-e-contas.png)
 
-**Exportar backup** inclui rascunhos, parcelas, vencimentos e recebimentos. **Importar backup** aceita arquivos novos e antigos. A importação substitui os itens do mês selecionado após confirmação e salva automaticamente.
+## Tecnologias
 
-## Banco e autenticação
+React 18 · Vite 5 · Tailwind CSS 3 · Supabase (Auth e PostgreSQL) · Node test runner · GitHub Actions e GitHub Pages
 
-Projeto Supabase exclusivo `financas-app` (`liajnsmwmnodczdwtnhk`). A tabela `finance_months` guarda um documento por usuário e mês, com chave composta e RLS por `auth.uid()`. A função `save_finance_month` usa controle de versão atômico: um dispositivo desatualizado recebe conflito em vez de sobrescrever os dados. Exporte o rascunho, atualize e confira os valores em caso de conflito.
+## Como executar localmente
 
-`database/schema.sql` contém o schema aplicado. O documento JSON na versão 2 mantém rendas, valores efetivamente recebidos, recorrência, vencimentos, pagamentos e parcelas. A leitura adapta documentos antigos sem modificar o histórico no banco; o novo formato é persistido ao salvar. A chave **publishable** é pública por definição e só permite acesso aos dados do usuário autenticado. Nunca coloque uma chave secret/service_role no frontend. Dados financeiros não são gravados no localStorage; somente a sessão de autenticação persiste no navegador. O acesso ao antigo localStorage serve exclusivamente à migração manual.
-
-O app pode validar os links de confirmação/recuperação diretamente, sem depender do redirecionamento do provedor. Para abrir diretamente os links de e-mail no app, configure no painel Supabase > Authentication > URL Configuration:
-
-- Site URL: `https://joaoaquino-dev.github.io/financas-app/`
-- Redirect URL: `https://joaoaquino-dev.github.io/financas-app/`
-
-O serviço padrão de e-mail do Supabase tem limites e restringe os destinatários aos membros da organização. Para disponibilizar cadastros a outros usuários, configure um SMTP próprio em Authentication antes de divulgar. Esse projeto é separado da Pellum.
-
-## Desenvolvimento
+Pré-requisitos: Node.js 20 ou superior.
 
 ```sh
 npm ci
-npm run dev
-npm test
-npm run build
+npm run dev      # servidor de desenvolvimento
+npm test         # testes das regras financeiras e do autosave
+npm run build    # build de produção
 ```
 
-Configuração pública padrão em `src/lib/supabase.js`. Para outro projeto, defina `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` em `.env.local` e aplique o schema no projeto de destino.
+A configuração pública do Supabase fica em `src/lib/supabase.js`. Para usar outro projeto, crie um `.env.local` com `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` e aplique o schema de [`database/schema.sql`](database/schema.sql). Nunca coloque uma chave `service_role` no frontend.
 
-O workflow `.github/workflows/deploy.yml` continua publicando `main` no GitHub Pages, com a base `/financas-app/`. Não é necessário migrar hospedagem.
+## Estrutura
 
-### Acompanhamento
+```
+src/
+  components/   Telas e componentes (resumo, tabela de lançamentos, previsão)
+  hooks/        useFinanceData: carregamento, autosave e conflitos
+  lib/          Cliente do Supabase
+  utils/        Regras financeiras (finance.js) e moeda (currency.js)
+database/       Schema SQL aplicado no Supabase
+tests/          Testes das regras de negócio e do autosave
+docs/           Guia de uso e capturas de tela
+```
 
-Use **⋯** na conta para abrir repetição, vencimento e parcelas. O valor e o pagamento ficam acessíveis na linha. A **Previsão de parcelas** projeta seis meses apenas com as parcelas cadastradas no mês selecionado; exclui fixas e novas compras e não consulta nem substitui os meses já salvos.
+## Decisões técnicas e aprendizados
+
+- **Segurança por linha (RLS):** cada linha da tabela `finance_months` pertence a um usuário e as políticas usam `auth.uid()`. A chave *publishable* do Supabase pode ficar no frontend porque só acessa dados do usuário autenticado.
+- **Controle de versão no salvamento:** a função `save_finance_month` só grava se a revisão enviada for a atual. Quem editar em um dispositivo desatualizado recebe um conflito em vez de sobrescrever os dados de outro.
+- **Um documento por usuário e mês:** o mês é salvo como um JSON versionado (`jsonb`). Isso simplificou o autosave e o "preparar próximo mês", mas limita consultas entre meses. Uma evolução natural seria normalizar rendas e despesas em tabelas próprias.
+- **Dados financeiros fora do `localStorage`:** só a sessão de login fica no navegador. O `localStorage` antigo é lido apenas na migração manual.
+- **Regras puras e testáveis:** a lógica de virada de mês, parcelas e vencimentos está em `utils/finance.js`, separada da interface, e é coberta por testes.
+
+## Limitações e próximos passos
+
+- Não há edição offline persistente nem pagamentos parciais.
+- O "saldo previsto" é um planejamento, não o saldo de uma conta bancária.
+- O e-mail padrão do Supabase limita o envio a poucos destinatários. Para abrir cadastros a outras pessoas, seria preciso configurar um SMTP próprio.
+- Executar os testes no workflow de CI antes do deploy.
+- Normalizar o modelo de dados em tabelas relacionais.
+
+## Como o projeto foi feito
+
+Desenvolvo o Soma com apoio de IA. Eu defino as regras (como as contas passam de um mês para o outro, por exemplo), uso o app no celular, testo o comportamento e reviso as mudanças.
+
+## Autor
+
+João Aquino · [LinkedIn](https://www.linkedin.com/in/jo%C3%A3o-aquino-dev) · [GitHub](https://github.com/joaoaquino-dev)
