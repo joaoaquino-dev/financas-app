@@ -15,7 +15,7 @@ function harness() {
   };
   const query = {select(){return this;},eq(){return this;},async maybeSingle(){return {data:null,error:null};}};
   const context = vm.createContext({...finance, ...react, supabase: {from:()=>query, rpc: (...args)=>rpc(...args)}, setTimeout(fn){timers.set(++id, fn);return id;},clearTimeout(i){timers.delete(i);},setInterval(){return 0;},clearInterval(){},window:{addEventListener(){},removeEventListener(){}},document:{visibilityState:'visible'}});
-  const code = readFileSync(new URL('../src/hooks/useFinanceData.js', import.meta.url),'utf8').replace(/^import .*;\n/gm,'').replace('export function useFinanceData','function useFinanceData');
+  const code = readFileSync(new URL('../src/hooks/useFinanceData.js', import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'').replace('export function useFinanceData','function useFinanceData');
   vm.runInContext(code, context);
   return {
     render(){cursor=0;output=context.useFinanceData('user','2026-11');while(effects.length)effects.shift()();return output;},
