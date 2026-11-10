@@ -3,86 +3,396 @@ import Brand from './components/Brand';
 import { useEffect, useState } from 'react';
 import { supabase } from './lib/supabase';
 import { useFinanceData } from './hooks/useFinanceData';
-import { monthKey, normalizeData, shiftMonth, dueStatus } from './utils/finance';
+import { monthKey, normalizeData, shiftMonth, dueStatus, newRow } from './utils/finance';
 import SummaryCards from './components/SummaryCards';
 import TransactionTable from './components/TransactionTable';
 import Auth from './components/Auth';
 import MonthReview from './components/MonthReview';
+import QuickAddModal from './components/QuickAddModal';
 
 export default function App() {
   const [session, setSession] = useState(null);
   const [ready, setReady] = useState(false);
   const [recovery, setRecovery] = useState(false);
   const [authError, setAuthError] = useState('');
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data, error }) => { setSession(data.session); setAuthError(error ? 'Não foi possível restaurar a sessão. Entre novamente.' : ''); setReady(true); });
+    supabase.auth.getSession().then(({ data, error }) => {
+      setSession(data.session);
+      setAuthError(error ? 'Não foi possível restaurar a sessão. Entre novamente.' : '');
+      setReady(true);
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
       if (event === 'PASSWORD_RECOVERY') setRecovery(true);
-      setSession(next); setReady(true);
+      setSession(next);
+      setReady(true);
     });
     return () => subscription.unsubscribe();
   }, []);
-  if (!ready) return <p className="p-8 text-center">Carregando…</p>;
+
+  if (!ready) return <p className="p-8 text-center text-slate-400">Carregando…</p>;
   if (recovery) return <Auth recovery onRecovered={() => setRecovery(false)} />;
-  if (!session) return <>{authError && <p role="alert">{authError}</p>}<Auth onRecoveryRequested={() => setRecovery(true)} /></>;
+  if (!session) {
+    return (
+      <>
+        {authError && <p role="alert" className="p-4 text-center text-rose-700">{authError}</p>}
+        <Auth onRecoveryRequested={() => setRecovery(true)} />
+      </>
+    );
+  }
   return <Finance key={session.user.id} user={session.user} />;
 }
+
 function Finance({ user }) {
   const [month, setMonth] = useState(() => monthKey());
   const f = useFinanceData(user.id, month);
   const [notice, setNotice] = useState('');
   const [review, setReview] = useState(false);
-  const [legacy, setLegacy] = useState(() => { try { const raw = localStorage.getItem('financasApp_v2'); return raw ? normalizeData(JSON.parse(raw)) : null; } catch { return null; } });
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+
+  const [legacy, setLegacy] = useState(() => {
+    try {
+      const raw = localStorage.getItem('financasApp_v2');
+      return raw ? normalizeData(JSON.parse(raw)) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const discard = () => !f.dirty || window.confirm('Há alterações não salvas. Deseja descartá-las?');
+
   async function navigateMonth(next) {
     if (f.busy || f.saving || !/^\d{4}-(0[1-9]|1[0-2])$/.test(next)) return;
     if (f.dirty && !(await f.save())) return;
-    setMonth(next); setNotice('');
+    setMonth(next);
+    setNotice('');
   }
+
   const isEmpty = !f.income.length && !f.expense.length;
+
   function exportData() {
     const url = URL.createObjectURL(new Blob([JSON.stringify({ month, ...f.data }, null, 2)], { type: 'application/json' }));
-    const a = document.createElement('a'); a.href = url; a.download = `soma-${month}.json`; a.click(); URL.revokeObjectURL(url);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `soma-${month}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
+
   async function importFile(event) {
-    const file = event.target.files?.[0]; event.target.value = '';
+    const file = event.target.files?.[0];
+    event.target.value = '';
     if (!file) return;
     try {
       if (file.size > 2e6) throw new Error('Arquivo muito grande.');
       const next = normalizeData(JSON.parse(await file.text()));
-      if (isEmpty || window.confirm('Substituir os itens deste mês pelo arquivo? O arquivo será salvo automaticamente.')) { f.change(next); setNotice('Arquivo importado. Salvamento automático ativado.'); }
-    } catch (err) { setNotice(err.message || 'Arquivo inválido.'); }
+      if (isEmpty || window.confirm('Substituir os itens deste mês pelo arquivo? O arquivo será salvo automaticamente.')) {
+        f.change(next);
+        setNotice('Arquivo importado com sucesso.');
+      }
+    } catch (err) {
+      setNotice(err.message || 'Arquivo inválido.');
+    }
   }
-  return <div className="soma-app min-h-screen bg-slate-50">
-    <header className="soma-header bg-white border-b"><div className="max-w-5xl mx-auto px-4 py-4 flex justify-between gap-3 items-center">
-      <h1><Brand /></h1>
-      <div className="flex gap-3 items-center min-w-0"><span className="text-xs text-gray-500 truncate hidden sm:block max-w-56">{user.email}</span><button className="btn-secondary" disabled={f.busy || f.saving} onClick={async () => { if (!f.saving && (!f.dirty || await f.save())) { const { error } = await supabase.auth.signOut(); if (error) setNotice('Não foi possível sair. Tente novamente.'); } }}>Sair</button></div>
-    </div></header>
-    <main className="max-w-5xl mx-auto px-4 py-6 space-y-5">
-      <div className="soma-page-heading flex flex-wrap items-end justify-between gap-4">
-        <div><p className="soma-eyebrow">SEU DINHEIRO EM ORDEM</p><h2 className="text-2xl font-bold">Vamos organizar o mês.</h2><p className="text-sm text-gray-500 mt-1">Suas contas, parcelas e rendas, um mês de cada vez.</p></div>
-        <div className="soma-month-nav"><button className="btn-secondary" aria-label="Mês anterior" disabled={f.busy || f.saving} onClick={() => navigateMonth(shiftMonth(month, -1))}>‹</button><label className="text-xs font-medium">Mês de pagamento<input aria-label="Mês de pagamento" type="month" required value={month} disabled={f.busy || f.saving} onChange={e => navigateMonth(e.target.value)} className="field" /></label><button className="btn-secondary" aria-label="Próximo mês" disabled={f.busy || f.saving} onClick={() => navigateMonth(shiftMonth(month, 1))}>›</button><button className="btn-secondary" disabled={f.busy || f.saving || month === monthKey()} onClick={() => navigateMonth(monthKey())}>Hoje</button></div>
-      </div>
-      <div className="soma-savebar bg-white border rounded-xl p-3 flex flex-wrap gap-3 items-center justify-between shadow-sm">
-        <p role="status" className={`text-sm ${f.dirty ? 'text-amber-700' : 'text-emerald-700'}`}>{f.busy ? 'Carregando…' : f.saving ? 'Salvando…' : f.error ? 'Não foi possível salvar / carregar' : f.dirty ? 'Salvamento automático pendente…' : f.loaded ? 'Salvo automaticamente' : 'Falha na conexão'}</p>
-        <div className="flex flex-wrap gap-2"><button className="btn-secondary" disabled={f.busy || f.saving} onClick={() => { if (discard()) f.load(); }}>Atualizar</button>{f.error && f.dirty && <button className="btn-primary" disabled={f.busy || f.saving || !f.loaded} onClick={f.save}>Tentar salvar novamente</button>}</div>
-      </div>
-      {f.error && <p role="alert" className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-3 text-sm">{f.error}</p>}
-      {notice && <p role="status" className="bg-blue-50 p-3 rounded-lg text-sm">{notice}<button aria-label="Fechar aviso" className="float-right px-2" onClick={() => setNotice('')}>×</button></p>}
-      {legacy && f.loaded && <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm space-y-3"><p><strong>Encontramos seus dados antigos neste navegador.</strong> Escolha o mês de pagamento acima e importe para não precisar redigitar.</p><div className="flex gap-2 flex-wrap"><button className="btn-secondary" disabled={f.busy} onClick={() => { if (isEmpty || window.confirm('Substituir os itens deste mês pelos dados antigos?')) { f.change(legacy); setLegacy(null); setNotice('Dados antigos carregados. Salvamento automático ativado. O original foi preservado no navegador.'); } }}>Importar dados antigos para este mês</button><button onClick={() => setLegacy(null)}>Agora não</button></div></div>}
-      {f.loaded && <>
-      <SummaryCards {...f} />
-      {f.expense.some(row => dueStatus(row, month)) && <p className="text-sm text-rose-800 bg-rose-50 p-3 rounded-xl">Há contas vencidas ou vencendo hoje. Use o filtro em Contas e cartões para conferir.</p>}
-      <div className="soma-next-month bg-white border rounded-xl p-4 flex flex-wrap justify-between items-center gap-3"><div><h3 className="font-semibold text-sm">Deixe o próximo mês encaminhado</h3><p className="text-xs text-slate-500 mt-1">Reaproveite contas, avance as parcelas e revise tudo antes de criar.</p></div><button className="btn-primary" disabled={f.busy || f.saving || f.dirty || isEmpty} onClick={() => setReview(true)}>Preparar próximo mês</button>{f.dirty && <p className="text-xs text-amber-700 w-full">Aguarde o salvamento automático para preparar o próximo.</p>}</div>
-      <Forecast data={f.data} month={month} />
-      <fieldset disabled={f.busy} className="grid grid-cols-1 gap-4 min-w-0">
-        {['income', 'expense'].map(kind => <TransactionTable key={`${month}-${kind}`} kind={kind} month={month} rows={f[kind]} total={kind === 'income' ? f.totalIncome : f.totalExpense} onAdd={() => f.add(kind)} onUpdate={(id, patch) => f.update(kind, id, patch)} onDelete={id => f.remove(kind, id)} />)}
-      </fieldset>
-      {isEmpty && <p className="text-sm text-slate-500">Já tem um mês preenchido? Abra esse mês no seletor e use “Preparar próximo mês”. Ou cadastre suas contas abaixo de cada seção.</p>}
-      <div className="flex flex-wrap gap-2"><button className="btn-secondary" onClick={exportData}>Exportar backup</button><label className={`btn-secondary cursor-pointer ${f.busy ? 'opacity-50' : ''}`}>Importar backup<input disabled={f.busy} className="sr-only" type="file" accept="application/json,.json" onChange={importFile} /></label></div>
-      <p className="soma-help text-xs text-slate-500 leading-relaxed">Selecione o mês em que vai pagar as contas. Em “Repetição e vencimento”, escolha se cada despesa é fixa, variável, parcelada ou um cartão. Marque rendas recebidas e contas pagas. As alterações são salvas automaticamente. Os outros dispositivos atualizam ao voltar à aba e a cada 30 segundos, sem edições pendentes.</p>
-      {review && <MonthReview source={f.data} sourceMonth={month} targetMonth={shiftMonth(month, 1)} busy={f.busy} error={f.error} onClose={() => setReview(false)} onCreate={async draft => { const next = shiftMonth(month, 1); if (await f.createMonth(next, draft)) { setReview(false); setMonth(next); setNotice('Mês criado e salvo. As contas do mês anterior foram preservadas.'); } }} />}
-      </>}
-    </main>
-  </div>;
+
+  function handleQuickAddRow(kind, { name, value, dueDay }) {
+    const row = {
+      ...newRow(kind),
+      name,
+      value,
+      dueDay,
+    };
+    f.change({
+      ...f.data,
+      [kind]: [...f.data[kind], row],
+    });
+  }
+
+  return (
+    <div className="soma-app min-h-screen bg-[#f4f7f5] pb-24 sm:pb-12 text-[#123c2d]">
+      {/* Cabeçalho Limpo e Moderno */}
+      <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs backdrop-blur-md bg-white/95">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex justify-between gap-3 items-center">
+          <Brand />
+
+          <div className="flex gap-2 sm:gap-3 items-center">
+            {/* Indicador Minimalista de Nuvem (substitui a barra pesada soma-savebar) */}
+            <CloudStatus f={f} onDiscardRefresh={() => { if (discard()) f.load(); }} />
+
+            <span className="text-xs text-slate-400 truncate hidden sm:block max-w-44">
+              {user.email}
+            </span>
+
+            <button
+              className="text-xs text-slate-500 hover:text-slate-800 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              disabled={f.busy || f.saving}
+              onClick={async () => {
+                if (!f.saving && (!f.dirty || (await f.save()))) {
+                  const { error } = await supabase.auth.signOut();
+                  if (error) setNotice('Não foi possível sair. Tente novamente.');
+                }
+              }}
+            >
+              Sair
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 py-5 space-y-5">
+        {/* Navegador de Mês */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+              Visão do Mês
+            </h2>
+            <p className="text-xs text-slate-500">Suas contas, parcelas e rendas organizadas.</p>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+            <button
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 text-slate-600 disabled:opacity-40 transition-colors"
+              aria-label="Mês anterior"
+              disabled={f.busy || f.saving}
+              onClick={() => navigateMonth(shiftMonth(month, -1))}
+            >
+              ‹
+            </button>
+            <input
+              aria-label="Mês de pagamento"
+              type="month"
+              required
+              value={month}
+              disabled={f.busy || f.saving}
+              onChange={e => navigateMonth(e.target.value)}
+              className="border-0 bg-transparent text-xs sm:text-sm font-semibold text-slate-700 py-1 px-2 focus:ring-0 cursor-pointer"
+            />
+            <button
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 text-slate-600 disabled:opacity-40 transition-colors"
+              aria-label="Próximo mês"
+              disabled={f.busy || f.saving}
+              onClick={() => navigateMonth(shiftMonth(month, 1))}
+            >
+              ›
+            </button>
+            {month !== monthKey() && (
+              <button
+                className="text-xs font-semibold text-[#14613e] hover:bg-emerald-50 px-2 py-1 rounded-lg ml-1 transition-colors"
+                disabled={f.busy || f.saving}
+                onClick={() => navigateMonth(monthKey())}
+              >
+                Hoje
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Notificações e Erros */}
+        {f.error && (
+          <div role="alert" className="bg-rose-50 border border-rose-200 text-rose-800 rounded-xl p-3 text-sm flex items-center justify-between gap-2">
+            <span>{f.error}</span>
+            {f.dirty && (
+              <button
+                className="btn-primary text-xs py-1 px-3 shrink-0"
+                disabled={f.busy || f.saving}
+                onClick={f.save}
+              >
+                Tentar salvar novamente
+              </button>
+            )}
+          </div>
+        )}
+
+        {notice && (
+          <p role="status" className="bg-emerald-50 text-emerald-900 border border-emerald-100 p-3 rounded-xl text-sm flex justify-between items-center">
+            {notice}
+            <button aria-label="Fechar aviso" className="px-2 font-bold text-slate-400 hover:text-slate-700" onClick={() => setNotice('')}>×</button>
+          </p>
+        )}
+
+        {/* Importação de Dados Antigos */}
+        {legacy && f.loaded && (
+          <div className="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-4 text-sm space-y-2">
+            <p><strong>Encontramos seus dados antigos neste navegador.</strong> Deseja importá-los para este mês?</p>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                className="btn-secondary text-xs"
+                disabled={f.busy}
+                onClick={() => {
+                  if (isEmpty || window.confirm('Substituir os itens deste mês pelos dados antigos?')) {
+                    f.change(legacy);
+                    setLegacy(null);
+                    setNotice('Dados antigos carregados.');
+                  }
+                }}
+              >
+                Importar dados antigos
+              </button>
+              <button className="text-xs text-slate-500 hover:underline px-2" onClick={() => setLegacy(null)}>
+                Agora não
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Conteúdo Principal */}
+        {f.loaded && (
+          <>
+            <SummaryCards {...f} month={month} />
+
+            {/* Alerta de contas com vencimento urgente */}
+            {f.expense.some(row => dueStatus(row, month)) && (
+              <div className="bg-rose-50/80 border border-rose-200/80 p-3 rounded-2xl flex items-center gap-2.5 text-xs text-rose-900">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                <span>Há contas vencidas ou vencendo hoje. Confira as marcações em vermelho na lista.</span>
+              </div>
+            )}
+
+            {/* Card de Preparação do Próximo Mês */}
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-3 shadow-2xs">
+              <div>
+                <h3 className="font-semibold text-sm text-slate-800">Deixe o próximo mês encaminhado</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Avance parcelas vigentes e repita as despesas fixas.</p>
+              </div>
+              <button
+                className="btn-primary text-xs py-2 px-4 rounded-xl"
+                disabled={f.busy || f.saving || f.dirty || isEmpty}
+                onClick={() => setReview(true)}
+              >
+                Preparar próximo mês
+              </button>
+              {f.dirty && <p className="text-xs text-amber-700 w-full">Aguarde o salvamento automático para preparar o próximo.</p>}
+            </div>
+
+            {/* Listas de Rendas e Despesas */}
+            <fieldset disabled={f.busy} className="grid grid-cols-1 gap-5">
+              {['income', 'expense'].map(kind => (
+                <TransactionTable
+                  key={`${month}-${kind}`}
+                  kind={kind}
+                  month={month}
+                  rows={f[kind]}
+                  total={kind === 'income' ? f.totalIncome : f.totalExpense}
+                  onAdd={() => f.add(kind)}
+                  onUpdate={(id, patch) => f.update(kind, id, patch)}
+                  onDelete={id => f.remove(kind, id)}
+                />
+              ))}
+            </fieldset>
+
+            {isEmpty && (
+              <p className="text-sm text-slate-500 text-center py-4">
+                Mês vazio? Adicione suas contas acima ou use o botão flutuante <strong>+</strong> no celular.
+              </p>
+            )}
+
+            <Forecast data={f.data} month={month} />
+
+            {/* Ferramentas de Backup e Rodapé */}
+            <div className="flex flex-wrap gap-2 pt-2">
+              <button className="btn-secondary text-xs" onClick={exportData}>Exportar backup</button>
+              <label className={`btn-secondary text-xs cursor-pointer ${f.busy ? 'opacity-50' : ''}`}>
+                Importar backup
+                <input disabled={f.busy} className="sr-only" type="file" accept="application/json,.json" onChange={importFile} />
+              </label>
+            </div>
+
+            <p className="soma-help text-xs text-slate-400 leading-relaxed pt-2">
+              Selecione o mês em que vai pagar as contas. Em “⋯”, escolha repetição e cadastre compras no cartão. Marque rendas recebidas e contas pagas. As alterações salvam na nuvem automaticamente.
+            </p>
+          </>
+        )}
+      </main>
+
+      {/* =========================================================
+          BOTÃO FLUTUANTE (FAB) PARA LANÇAMENTO RÁPIDO NO CELULAR
+      ========================================================= */}
+      <button
+        type="button"
+        aria-label="Adicionar lançamento rápido"
+        onClick={() => setShowQuickAdd(true)}
+        className="fixed bottom-6 right-5 sm:hidden z-40 w-14 h-14 bg-[#14613e] text-white rounded-full shadow-lg shadow-emerald-950/20 flex items-center justify-center text-3xl font-light hover:bg-[#123c2d] active:scale-90 transition-transform"
+      >
+        +
+      </button>
+
+      {/* Modal / Sheet de Entrada Rápida */}
+      {showQuickAdd && (
+        <QuickAddModal
+          onAddRow={handleQuickAddRow}
+          onClose={() => setShowQuickAdd(false)}
+        />
+      )}
+
+      {/* Modal de Revisão do Próximo Mês */}
+      {review && (
+        <MonthReview
+          source={f.data}
+          sourceMonth={month}
+          targetMonth={shiftMonth(month, 1)}
+          busy={f.busy}
+          error={f.error}
+          onClose={() => setReview(false)}
+          onCreate={async draft => {
+            const next = shiftMonth(month, 1);
+            if (await f.createMonth(next, draft)) {
+              setReview(false);
+              setMonth(next);
+              setNotice('Próximo mês criado e salvo com sucesso!');
+            }
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* Indicador Minimalista de Nuvem */
+function CloudStatus({ f, onDiscardRefresh }) {
+  if (f.saving) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200/50">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+        <span className="hidden sm:inline">Salvando…</span>
+      </span>
+    );
+  }
+  if (f.dirty) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200/50">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+        <span className="hidden sm:inline">Salvando em breve…</span>
+      </span>
+    );
+  }
+  if (f.error) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200">
+        <span>⚠️</span>
+        <span className="hidden sm:inline">Erro</span>
+      </span>
+    );
+  }
+  return (
+    <div className="flex items-center gap-1.5">
+      <span
+        title="Dados sincronizados e salvos automaticamente"
+        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/50"
+      >
+        <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+        </svg>
+        <span className="hidden sm:inline">Salvo</span>
+      </span>
+      <button
+        type="button"
+        title="Recarregar dados da nuvem"
+        disabled={f.busy || f.saving}
+        onClick={onDiscardRefresh}
+        className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors text-xs"
+      >
+        ↻
+      </button>
+    </div>
+  );
 }
