@@ -109,22 +109,22 @@ function Finance({ user }) {
   }
 
   return (
-    <div className="soma-app min-h-screen bg-[#f4f7f5] pb-24 sm:pb-12 text-[#123c2d]">
-      {/* Cabeçalho Limpo e Moderno */}
-      <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs backdrop-blur-md bg-white/95">
+    <div className="soma-app min-h-screen bg-[#f4f7f5] pb-24 sm:pb-12 text-[#002a17]">
+      {/* Cabeçalho Alviverde Imponente (borda verde clássica) */}
+      <header className="bg-white border-b border-slate-200/90 border-t-4 border-t-[#006437] sticky top-0 z-30 shadow-2xs backdrop-blur-md bg-white/95">
         <div className="max-w-5xl mx-auto px-4 py-3 flex justify-between gap-3 items-center">
           <Brand />
 
           <div className="flex gap-2 sm:gap-3 items-center">
-            {/* Indicador Minimalista de Nuvem (substitui a barra pesada soma-savebar) */}
+            {/* Status Minimalista de Sincronização (Sem emojis/ícones gráficos) */}
             <CloudStatus f={f} onDiscardRefresh={() => { if (discard()) f.load(); }} />
 
-            <span className="text-xs text-slate-400 truncate hidden sm:block max-w-44">
+            <span className="text-xs text-slate-400 truncate hidden sm:block max-w-44 font-mono">
               {user.email}
             </span>
 
             <button
-              className="text-xs text-slate-500 hover:text-slate-800 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs text-slate-500 hover:text-[#006437] font-semibold px-2.5 py-1.5 rounded-lg hover:bg-[#f0f7f3] transition-colors"
               disabled={f.busy || f.saving}
               onClick={async () => {
                 if (!f.saving && (!f.dirty || (await f.save()))) {
@@ -143,15 +143,15 @@ function Finance({ user }) {
         {/* Navegador de Mês */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#003e22]">
               Visão do Mês
             </h2>
-            <p className="text-xs text-slate-500">Suas contas, parcelas e rendas organizadas.</p>
+            <p className="text-xs text-slate-500">Contas, parcelas e rendas organizadas.</p>
           </div>
 
           <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
             <button
-              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 text-slate-600 disabled:opacity-40 transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#f0f7f3] text-slate-600 disabled:opacity-40 transition-colors font-bold"
               aria-label="Mês anterior"
               disabled={f.busy || f.saving}
               onClick={() => navigateMonth(shiftMonth(month, -1))}
@@ -165,10 +165,10 @@ function Finance({ user }) {
               value={month}
               disabled={f.busy || f.saving}
               onChange={e => navigateMonth(e.target.value)}
-              className="border-0 bg-transparent text-xs sm:text-sm font-semibold text-slate-700 py-1 px-2 focus:ring-0 cursor-pointer"
+              className="border-0 bg-transparent text-xs sm:text-sm font-bold text-[#003e22] py-1 px-2 focus:ring-0 cursor-pointer"
             />
             <button
-              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 text-slate-600 disabled:opacity-40 transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#f0f7f3] text-slate-600 disabled:opacity-40 transition-colors font-bold"
               aria-label="Próximo mês"
               disabled={f.busy || f.saving}
               onClick={() => navigateMonth(shiftMonth(month, 1))}
@@ -177,7 +177,7 @@ function Finance({ user }) {
             </button>
             {month !== monthKey() && (
               <button
-                className="text-xs font-semibold text-[#14613e] hover:bg-emerald-50 px-2 py-1 rounded-lg ml-1 transition-colors"
+                className="text-xs font-bold text-[#006437] hover:bg-[#f0f7f3] px-2.5 py-1 rounded-lg ml-1 transition-colors"
                 disabled={f.busy || f.saving}
                 onClick={() => navigateMonth(monthKey())}
               >
@@ -197,14 +197,14 @@ function Finance({ user }) {
                 disabled={f.busy || f.saving}
                 onClick={f.save}
               >
-                Tentar salvar novamente
+                Tentar salvar
               </button>
             )}
           </div>
         )}
 
         {notice && (
-          <p role="status" className="bg-emerald-50 text-emerald-900 border border-emerald-100 p-3 rounded-xl text-sm flex justify-between items-center">
+          <p role="status" className="bg-[#f0f7f3] text-[#00502c] border border-[#bde1cc] p-3 rounded-xl text-sm flex justify-between items-center">
             {notice}
             <button aria-label="Fechar aviso" className="px-2 font-bold text-slate-400 hover:text-slate-700" onClick={() => setNotice('')}>×</button>
           </p>
@@ -212,7 +212,7 @@ function Finance({ user }) {
 
         {/* Importação de Dados Antigos */}
         {legacy && f.loaded && (
-          <div className="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-4 text-sm space-y-2">
+          <div className="bg-[#f0f7f3] border border-[#bde1cc] rounded-2xl p-4 text-sm space-y-2">
             <p><strong>Encontramos seus dados antigos neste navegador.</strong> Deseja importá-los para este mês?</p>
             <div className="flex gap-2 flex-wrap">
               <button
@@ -242,26 +242,26 @@ function Finance({ user }) {
 
             {/* Alerta de contas com vencimento urgente */}
             {f.expense.some(row => dueStatus(row, month)) && (
-              <div className="bg-rose-50/80 border border-rose-200/80 p-3 rounded-2xl flex items-center gap-2.5 text-xs text-rose-900">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                <span>Há contas vencidas ou vencendo hoje. Confira as marcações em vermelho na lista.</span>
+              <div className="bg-rose-50/80 border border-rose-200/80 p-3 rounded-2xl flex items-center gap-2.5 text-xs text-rose-900 font-medium">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                <span>Atenção: há contas vencidas ou vencendo hoje.</span>
               </div>
             )}
 
             {/* Card de Preparação do Próximo Mês */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-3 shadow-2xs">
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-3 shadow-2xs">
               <div>
-                <h3 className="font-semibold text-sm text-slate-800">Deixe o próximo mês encaminhado</h3>
+                <h3 className="font-bold text-sm text-[#003e22]">Deixe o próximo mês encaminhado</h3>
                 <p className="text-xs text-slate-400 mt-0.5">Avance parcelas vigentes e repita as despesas fixas.</p>
               </div>
               <button
-                className="btn-primary text-xs py-2 px-4 rounded-xl"
+                className="btn-primary text-xs py-2 px-4 rounded-xl font-bold"
                 disabled={f.busy || f.saving || f.dirty || isEmpty}
                 onClick={() => setReview(true)}
               >
                 Preparar próximo mês
               </button>
-              {f.dirty && <p className="text-xs text-amber-700 w-full">Aguarde o salvamento automático para preparar o próximo.</p>}
+              {f.dirty && <p className="text-xs text-amber-700 w-full">Aguarde a gravação automática para preparar o próximo.</p>}
             </div>
 
             {/* Listas de Rendas e Despesas */}
@@ -282,7 +282,7 @@ function Finance({ user }) {
 
             {isEmpty && (
               <p className="text-sm text-slate-500 text-center py-4">
-                Mês vazio? Adicione suas contas acima ou use o botão flutuante <strong>+</strong> no celular.
+                Mês vazio. Adicione lançamentos acima ou use o botão <strong>+</strong> no celular.
               </p>
             )}
 
@@ -298,20 +298,20 @@ function Finance({ user }) {
             </div>
 
             <p className="soma-help text-xs text-slate-400 leading-relaxed pt-2">
-              Selecione o mês em que vai pagar as contas. Em “⋯”, escolha repetição e cadastre compras no cartão. Marque rendas recebidas e contas pagas. As alterações salvam na nuvem automaticamente.
+              Selecione o mês em que vai pagar as contas. Em “⋯”, defina repetição e parcelamentos. Marque rendas recebidas e contas pagas. Alterações são sincronizadas automaticamente.
             </p>
           </>
         )}
       </main>
 
       {/* =========================================================
-          BOTÃO FLUTUANTE (FAB) PARA LANÇAMENTO RÁPIDO NO CELULAR
+          BOTÃO FLUTUANTE (FAB) VERDE PALMEIRAS NO CELULAR
       ========================================================= */}
       <button
         type="button"
         aria-label="Adicionar lançamento rápido"
         onClick={() => setShowQuickAdd(true)}
-        className="fixed bottom-6 right-5 sm:hidden z-40 w-14 h-14 bg-[#14613e] text-white rounded-full shadow-lg shadow-emerald-950/20 flex items-center justify-center text-3xl font-light hover:bg-[#123c2d] active:scale-90 transition-transform"
+        className="fixed bottom-6 right-5 sm:hidden z-40 w-14 h-14 bg-[#006437] text-white rounded-full shadow-lg shadow-emerald-950/25 flex items-center justify-center text-3xl font-light hover:bg-[#00502c] active:scale-90 transition-transform"
       >
         +
       </button>
@@ -347,11 +347,11 @@ function Finance({ user }) {
   );
 }
 
-/* Indicador Minimalista de Nuvem */
+/* Indicador Minimalista Alviverde (sem ícones/desenhos) */
 function CloudStatus({ f, onDiscardRefresh }) {
   if (f.saving) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200/50">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200">
         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
         <span className="hidden sm:inline">Salvando…</span>
       </span>
@@ -359,16 +359,16 @@ function CloudStatus({ f, onDiscardRefresh }) {
   }
   if (f.dirty) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200/50">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200">
         <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-        <span className="hidden sm:inline">Salvando em breve…</span>
+        <span className="hidden sm:inline">Pendente</span>
       </span>
     );
   }
   if (f.error) {
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200">
-        <span>⚠️</span>
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200">
+        <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
         <span className="hidden sm:inline">Erro</span>
       </span>
     );
@@ -376,20 +376,18 @@ function CloudStatus({ f, onDiscardRefresh }) {
   return (
     <div className="flex items-center gap-1.5">
       <span
-        title="Dados sincronizados e salvos automaticamente"
-        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/50"
+        title="Dados sincronizados na nuvem"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold text-[#006437] bg-[#f0f7f3] border border-[#bde1cc]"
       >
-        <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-        </svg>
-        <span className="hidden sm:inline">Salvo</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-[#006437]" />
+        <span className="hidden sm:inline">Sincronizado</span>
       </span>
       <button
         type="button"
         title="Recarregar dados da nuvem"
         disabled={f.busy || f.saving}
         onClick={onDiscardRefresh}
-        className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors text-xs"
+        className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#006437] hover:bg-[#f0f7f3] transition-colors text-xs font-bold"
       >
         ↻
       </button>

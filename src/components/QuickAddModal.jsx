@@ -33,8 +33,8 @@ export default function QuickAddModal({ onAddRow, onClose }) {
 
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-bold text-slate-800 text-lg">Lançamento Rápido</h3>
-            <p className="text-xs text-slate-400">Adicione em segundos sem rolar a tela</p>
+            <h3 className="font-bold text-[#003e22] text-lg">Novo lançamento</h3>
+            <p className="text-xs text-slate-400">Adicione suas contas ou rendas em segundos</p>
           </div>
           <button
             type="button"
@@ -46,31 +46,31 @@ export default function QuickAddModal({ onAddRow, onClose }) {
           </button>
         </div>
 
-        {/* Alternador Renda vs Despesa */}
-        <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-xl mb-4">
+        {/* Alternador Renda vs Despesa (100% tipográfico, sem ícones/emojis) */}
+        <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#f0f7f3] rounded-xl mb-4 border border-[#bde1cc]/50">
           <button
             type="button"
             onClick={() => setKind('expense')}
-            className={`py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-1.5 ${
               kind === 'expense'
                 ? 'bg-white text-rose-700 shadow-xs'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             <span className="w-2 h-2 rounded-full bg-rose-500" />
-            Despesa / Conta
+            Despesa
           </button>
           <button
             type="button"
             onClick={() => setKind('income')}
-            className={`py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-1.5 ${
               kind === 'income'
-                ? 'bg-white text-emerald-700 shadow-xs'
+                ? 'bg-[#006437] text-white shadow-xs'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            Renda / Entrada
+            <span className="w-2 h-2 rounded-full bg-white" />
+            Renda
           </button>
         </div>
 
@@ -116,7 +116,7 @@ export default function QuickAddModal({ onAddRow, onClose }) {
           <button
             type="submit"
             disabled={!name.trim()}
-            className="w-full btn-primary py-3 rounded-xl font-semibold text-base shadow-sm active:scale-98 transition-transform mt-2 flex items-center justify-center gap-2"
+            className="w-full btn-primary py-3 rounded-xl font-bold text-base shadow-sm active:scale-98 transition-transform mt-2 flex items-center justify-center gap-2"
           >
             <span>+</span> Adicionar {kind === 'expense' ? 'despesa' : 'renda'}
           </button>

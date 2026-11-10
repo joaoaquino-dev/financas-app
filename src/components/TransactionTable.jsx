@@ -16,14 +16,14 @@ export default function TransactionTable({ kind, rows, total, month, onAdd, onUp
 
   return (
     <section className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs self-start">
-      {/* Cabeçalho da Seção */}
-      <div className="px-4 py-3.5 border-b border-slate-100 bg-slate-50/70 flex flex-wrap gap-2 items-center justify-between">
-        <h2 className="font-semibold text-slate-800 flex items-center gap-2 text-sm sm:text-base">
-          <span className={`w-2.5 h-2.5 rounded-full ${income ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+      {/* Cabeçalho Alviverde da Seção */}
+      <div className="px-4 py-3.5 border-b border-slate-100 bg-[#f0f7f3]/60 flex flex-wrap gap-2 items-center justify-between">
+        <h2 className="font-bold text-[#003e22] flex items-center gap-2 text-sm sm:text-base">
+          <span className={`w-2.5 h-2.5 rounded-full ${income ? 'bg-[#006437]' : 'bg-rose-500'}`} />
           {income ? 'Rendas e Entradas' : 'Contas e Cartões'}
           <span className="text-xs font-normal text-slate-400">({rows.length})</span>
         </h2>
-        <span className="text-sm font-bold tabular-nums text-slate-900 bg-white px-2.5 py-1 rounded-lg border border-slate-200/60 shadow-2xs">
+        <span className="text-sm font-bold tabular-nums text-[#003e22] bg-white px-2.5 py-1 rounded-lg border border-[#bde1cc]/80 shadow-2xs">
           {formatBRL(total)}
         </span>
       </div>
@@ -31,7 +31,7 @@ export default function TransactionTable({ kind, rows, total, month, onAdd, onUp
       {/* Seletor de Filtro */}
       {!reviewing && rows.length > 0 && (
         <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500">
-          <span>Filtrar:</span>
+          <span className="font-medium text-slate-600">Filtrar:</span>
           <select
             aria-label={`Filtrar ${income ? 'rendas' : 'despesas'}`}
             value={filter}
@@ -41,7 +41,7 @@ export default function TransactionTable({ kind, rows, total, month, onAdd, onUp
             <option value="all">Todas ({rows.length})</option>
             <option value="pending">{income ? 'A receber' : 'A pagar'}</option>
             <option value="done">{income ? 'Recebidas' : 'Pagas'}</option>
-            <option value="late">{income ? 'Previstas até hoje' : 'Vencidas ou vencendo hoje'}</option>
+            <option value="late">{income ? 'Previstas até hoje' : 'Vencidas ou hoje'}</option>
           </select>
         </div>
       )}
@@ -49,7 +49,7 @@ export default function TransactionTable({ kind, rows, total, month, onAdd, onUp
       {/* Lista Vazia */}
       {!shown.length && (
         <div className="p-8 text-center text-slate-400 text-sm">
-          {rows.length ? 'Nenhum item com este filtro.' : 'Nenhum lançamento adicionado neste mês.'}
+          {rows.length ? 'Nenhum lançamento com este filtro.' : 'Nenhum lançamento adicionado neste mês.'}
         </div>
       )}
 
@@ -69,16 +69,16 @@ export default function TransactionTable({ kind, rows, total, month, onAdd, onUp
       </div>
 
       {/* Botão Inferior de Adicionar */}
-      <div className="p-3 border-t border-slate-100 bg-slate-50/50">
+      <div className="p-3 border-t border-slate-100 bg-[#f0f7f3]/40">
         <button
           type="button"
-          className="btn-secondary w-full flex items-center justify-center gap-1.5 font-medium hover:border-slate-300 transition-colors"
+          className="btn-secondary w-full flex items-center justify-center gap-1.5 font-semibold text-[#006437] hover:border-[#006437]/40 transition-colors"
           onClick={() => {
             setFilter('all');
             onAdd();
           }}
         >
-          <span className="text-base leading-none font-bold text-emerald-700">+</span> Adicionar {income ? 'renda' : 'despesa'}
+          <span className="text-base font-bold leading-none">+</span> Adicionar {income ? 'renda' : 'despesa'}
         </button>
       </div>
     </section>
@@ -94,11 +94,11 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
   return (
     <article
       className={`p-3 sm:px-4 sm:py-3.5 transition-all duration-200 ${
-        done ? 'bg-slate-50/60' : 'hover:bg-slate-50/40'
+        done ? 'bg-slate-50/70' : 'hover:bg-[#f0f7f3]/25'
       }`}
     >
       <div className="flex items-center gap-2.5 sm:gap-3">
-        {/* Checkbox moderno com micro-interação */}
+        {/* Checkbox moderno com fundo Verde Palmeiras ao marcar */}
         {!reviewing && (
           <button
             type="button"
@@ -115,8 +115,8 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
             }}
             className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border transition-all active:scale-90 ${
               done
-                ? 'bg-[#14613e] border-[#14613e] text-white shadow-xs'
-                : 'border-slate-300 bg-white hover:border-slate-400'
+                ? 'bg-[#006437] border-[#006437] text-white shadow-xs'
+                : 'border-slate-300 bg-white hover:border-[#006437]'
             }`}
           >
             {done && (
@@ -127,7 +127,7 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
           </button>
         )}
 
-        {/* Nome do item e Badges com bolinhas coloridas */}
+        {/* Nome do item e Badges com bolinhas coloridas (sem ícones gráficos) */}
         <div className="flex-1 min-w-0">
           <input
             aria-label="Descrição"
@@ -137,12 +137,11 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
             onChange={e => onUpdate({ name: e.target.value })}
             className={`w-full min-w-0 bg-transparent py-0.5 text-sm sm:text-base font-medium rounded outline-none transition-all ${
               done ? 'line-through text-slate-400 decoration-slate-300' : 'text-slate-800'
-            } focus:bg-emerald-50/60 px-1`}
+            } focus:bg-[#f0f7f3] px-1`}
           />
 
-          {/* Badges / Status Pills */}
           <div className="flex flex-wrap items-center gap-1.5 mt-0.5 px-1">
-            {/* Status de Vencimento / Pagamento */}
+            {/* Status de Vencimento / Pagamento com bolinhas de cor puras */}
             {status === 'Atrasado' ? (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
@@ -154,8 +153,8 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
                 Vence hoje
               </span>
             ) : done ? (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#f0f7f3] text-[#006437] border border-[#bde1cc]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#006437]" />
                 {income ? 'Recebido' : 'Pago'}
               </span>
             ) : null}
@@ -165,17 +164,17 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
               {income ? (row.recurring ? 'Recorrente' : 'Só neste mês') : EXPENSE_TYPES[row.type]}
             </span>
 
-            {/* Parcela X/Y */}
+            {/* Parcela */}
             {!income && row.type === 'installment' && row.installment && (
               <span className="inline-flex items-center text-[11px] font-mono font-medium text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-md">
                 {row.installment.current}/{row.installment.total}
               </span>
             )}
 
-            {/* Dia do Vencimento */}
+            {/* Vencimento */}
             {date && !done && (
               <span className="text-[11px] text-slate-400">
-                {income ? 'previsto dia' : 'vence dia'} {date.slice(8)}
+                {income ? 'dia' : 'vence dia'} {date.slice(8)}
               </span>
             )}
           </div>
@@ -191,17 +190,17 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
           />
         </div>
 
-        {/* Botão de abrir Drawer / Bottom Sheet */}
+        {/* Botão de abrir Drawer / Detalhes */}
         <button
           type="button"
           aria-label={`Detalhes de ${row.name || 'item'}`}
           onClick={() => setShowDrawer(true)}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0 text-base"
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#006437] hover:bg-[#f0f7f3] transition-colors shrink-0 text-base font-bold"
         >
           ⋯
         </button>
 
-        {/* Botão de Excluir Rápido */}
+        {/* Botão de Excluir */}
         <button
           type="button"
           aria-label={`Remover ${row.name || 'item'}`}
@@ -218,10 +217,10 @@ function Row({ row, income, month, onUpdate, onDelete, reviewing }) {
 
       {/* Se for renda e já foi recebida, exibe campo do recebido real */}
       {income && row.received && !reviewing && (
-        <div className="mt-2.5 ml-8 sm:ml-9 bg-emerald-50/80 border border-emerald-100 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="mt-2.5 ml-8 sm:ml-9 bg-[#f0f7f3] border border-[#bde1cc] rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="text-xs font-semibold text-emerald-900">Valor recebido real (R$)</p>
-            <p className="text-[11px] text-emerald-700">Previsão original mantida: {formatBRL(row.value)}</p>
+            <p className="text-xs font-semibold text-[#00502c]">Valor recebido real (R$)</p>
+            <p className="text-[11px] text-[#006437]">Previsão original mantida: {formatBRL(row.value)}</p>
           </div>
           <div className="w-32">
             <MoneyInput
@@ -272,20 +271,17 @@ function DrawerModal({ row, income, onClose, onUpdate, onDelete }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      {/* Backdrop com blur */}
       <div
         className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
-      {/* Conteúdo da Gaveta */}
       <div className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl max-h-[85vh] overflow-y-auto z-10 animate-in slide-in-from-bottom duration-200">
-        {/* Barra de puxar mobile */}
         <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden" />
 
         <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
           <div>
-            <h3 className="font-bold text-slate-800 text-base">
+            <h3 className="font-bold text-[#003e22] text-base">
               Configurações: {row.name || 'Sem nome'}
             </h3>
             <p className="text-xs text-slate-400">Repetição, vencimento e compras parceladas</p>
@@ -302,14 +298,14 @@ function DrawerModal({ row, income, onClose, onUpdate, onDelete }) {
         <div className="space-y-4">
           {/* Tipo e Recorrência */}
           {income ? (
-            <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer">
+            <label className="flex items-center gap-3 p-3 bg-[#f0f7f3] rounded-xl cursor-pointer">
               <input
                 type="checkbox"
                 checked={row.recurring}
                 onChange={e => onUpdate({ recurring: e.target.checked })}
-                className="w-4 h-4 accent-[#14613e] rounded"
+                className="w-4 h-4 accent-[#006437] rounded"
               />
-              <span className="text-sm font-medium text-slate-700">
+              <span className="text-sm font-medium text-[#003e22]">
                 Repetir esta renda automaticamente no próximo mês
               </span>
             </label>
@@ -369,11 +365,10 @@ function DrawerModal({ row, income, onClose, onUpdate, onDelete }) {
                 </span>
               </div>
 
-              {/* Botão de Somar Compra na Fatura */}
               <div>
                 <button
                   type="button"
-                  className="text-xs font-semibold text-[#14613e] hover:underline"
+                  className="text-xs font-semibold text-[#006437] hover:underline"
                   onClick={() => setAddingParcel(!addingParcel)}
                 >
                   {addingParcel ? 'Cancelar soma' : '+ Somar compra avulsa na fatura'}
@@ -413,7 +408,6 @@ function DrawerModal({ row, income, onClose, onUpdate, onDelete }) {
           )}
         </div>
 
-        {/* Rodapé da Gaveta */}
         <div className="mt-6 pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
           <button
             type="button"
@@ -519,7 +513,7 @@ function CardInstallments({ row, onUpdate }) {
           <div className="flex items-center gap-1 shrink-0">
             <button
               type="button"
-              className="text-xs text-[#14613e] px-2 py-1 hover:underline"
+              className="text-xs text-[#006437] font-semibold px-2 py-1 hover:underline"
               onClick={() => {
                 setDraft({ ...p });
                 setIncludeInTotal(false);
@@ -551,7 +545,7 @@ function CardInstallments({ row, onUpdate }) {
             setIncludeInTotal(false);
             setError('');
           }}
-          className="w-full py-2 text-xs text-[#14613e] font-semibold border border-dashed border-[#14613e]/30 rounded-xl hover:bg-emerald-50/50"
+          className="w-full py-2 text-xs text-[#006437] font-semibold border border-dashed border-[#006437]/30 rounded-xl hover:bg-[#f0f7f3]"
         >
           + Cadastrar compra parcelada neste cartão
         </button>

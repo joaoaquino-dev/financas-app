@@ -30,49 +30,49 @@
 }
 button:disabled, fieldset:disabled, input:disabled { opacity: .6; cursor: not-allowed; }
 button, input, a { outline-offset: 3px; }
-button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #14613e; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #006437; }
 
 input, select { min-width: 0; }
-input[type="checkbox"] { min-width: 1rem; accent-color: #14613e; }
-summary:focus-visible { outline: 2px solid #14613e; outline-offset: 2px; }
+input[type="checkbox"] { min-width: 1rem; accent-color: #006437; }
+summary:focus-visible { outline: 2px solid #006437; outline-offset: 2px; }
 dialog { overscroll-behavior: contain; }
 
-/* Soma: deep greens, white surfaces and fresh green accents. */
+/* Soma: Palmeiras alviverde imponente, branco puro e toques dourados. */
 @layer base {
-  body { background: #f4f7f5; color: #123c2d; -webkit-font-smoothing: antialiased; }
+  body { background: #f4f7f5; color: #002a17; -webkit-font-smoothing: antialiased; }
   input, select, button { font: inherit; }
-  input, select { color: #123c2d; }
-  ::selection { background: #d9efc9; color: #123c2d; }
+  input, select { color: #002a17; }
+  ::selection { background: #bde1cc; color: #002a17; }
 }
 @layer components {
-  .btn-primary { background: #14613e; min-height: 44px; border-radius: 10px; transition: background .15s; }
-  .btn-primary:hover { background: #123c2d; }
+  .btn-primary { background: #006437; min-height: 44px; border-radius: 10px; transition: background .15s; }
+  .btn-primary:hover { background: #00502c; }
   .btn-secondary { min-height: 44px; border-color: #d9e3dc; border-radius: 10px; }
   .field { min-height: 44px; border-color: #c6d5cb; }
 }
-.soma-header { border-top: 4px solid #123c2d; border-bottom-color: #dce5df; }
+.soma-header { border-top: 4px solid #006437; border-bottom-color: #dce5df; }
 .soma-brand { display: flex; gap: 11px; align-items: center; }
 .soma-mark { width: 40px; height: 40px; flex-shrink: 0; }
-.soma-wordmark { display: block; color: #123c2d; font-size: 32px; font-weight: 700; letter-spacing: -1.8px; line-height: 1; }
-.soma-dot { color: #237347; }
-.soma-tagline { display: block; color: #536c5d; font-size: 11px; font-weight: 400; margin-top: 5px; }
-.soma-eyebrow { font-size: 10px; font-weight: 700; color: #5c7465; letter-spacing: .16em; margin-bottom: 8px; }
+.soma-wordmark { display: block; color: #003e22; font-size: 32px; font-weight: 700; letter-spacing: -1.8px; line-height: 1; }
+.soma-dot { color: #d4a017; }
+.soma-tagline { display: block; color: #00502c; font-size: 11px; font-weight: 500; margin-top: 5px; }
+.soma-eyebrow { font-size: 10px; font-weight: 700; color: #006437; letter-spacing: .16em; margin-bottom: 8px; }
 .soma-page-heading { padding: 10px 0 3px; }
 .soma-page-heading h2 { letter-spacing: -.035em; }
-.soma-savebar { border-color: #d9e3dc; box-shadow: 0 3px 10px #123c2d08; }
+.soma-savebar { border-color: #d9e3dc; box-shadow: 0 3px 10px #002a1708; }
 .soma-summary { border-color: #dce5df; box-shadow: none; padding: 18px 14px; }
 .soma-summary > p:nth-child(2) { letter-spacing: -.04em; }
-.soma-balance { background: #123c2d; border-color: #123c2d; }
-.soma-balance > p { color: #c6ddcc; }
+.soma-balance { background: #006437; border-color: #006437; }
+.soma-balance > p { color: #dcf0e4; }
 .soma-balance > p:nth-child(2) { color: #fff; }
 .soma-balance > p.text-rose-700 { color: #ffb9ac; }
-.soma-next-month { border-color: #dce5df; border-left: 3px solid #9cdb72; }
+.soma-next-month { border-color: #dce5df; border-left: 3px solid #006437; }
 .soma-transactions { border-color: #d9e3dc; box-shadow: none; }
-.soma-transactions > div:first-child { background: #edf4ef; }
+.soma-transactions > div:first-child { background: #f0f7f3; }
 .soma-transactions article:focus-within { background: #fbfdfb; }
 .soma-help { border-top: 1px solid #dce5df; padding-top: 18px; padding-bottom: 12px; }
 .soma-auth { padding-top: max(36px, 9vh); }
-.soma-auth-card { border-color: #dce5df; border-top: 4px solid #123c2d; padding: 28px; box-shadow: 0 12px 40px #123c2d08; }
+.soma-auth-card { border-color: #dce5df; border-top: 4px solid #006437; padding: 28px; box-shadow: 0 12px 40px #002a1708; }
 .soma-auth-card > .soma-brand { margin-bottom: 30px; }
 .soma-auth-card h1 { letter-spacing: -.04em; }
 input[type="month"] { min-height: 44px; }

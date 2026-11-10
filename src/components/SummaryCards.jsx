@@ -16,74 +16,69 @@ export default function SummaryCards({
 
   return (
     <section aria-label="Resumo do mês" className="space-y-3.5">
-      {/* Widget Motivacional: Disponível para gastar hoje */}
+      {/* Widget Motivacional Alviverde: Disponível para gastar hoje (100% tipográfico, sem ícones) */}
       {dailyAllowance && (
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#14613e] to-[#123c2d] text-white rounded-2xl p-4 sm:p-5 shadow-sm shadow-emerald-950/10">
-          <div className="flex flex-wrap items-center justify-between gap-3 relative z-10">
+        <div className="bg-[#006437] text-white rounded-2xl p-4 sm:p-5 shadow-sm border-l-4 border-l-[#d4a017]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-100 bg-white/10 backdrop-blur-xs px-2.5 py-1 rounded-full">
-                <span>✨</span> Ritmo diário recomendado
+              <span className="inline-block text-[11px] font-bold tracking-widest text-[#d4a017] uppercase">
+                Ritmo diário disponível
               </span>
               <h3 className="text-xs sm:text-sm font-medium text-emerald-100">
                 Disponível para gastar hoje:
               </h3>
-              <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums">
+              <p className="text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums text-white">
                 {formatBRL(dailyAllowance.dailyValue)}
-                <span className="text-xs sm:text-sm font-normal text-emerald-200 ml-1">/ dia</span>
+                <span className="text-xs sm:text-sm font-normal text-emerald-200 ml-1.5">/ dia</span>
               </p>
             </div>
 
             <div className="text-left sm:text-right">
-              <p className="text-xs font-medium text-emerald-100">
+              <p className="text-xs font-semibold text-white">
                 {dailyAllowance.isCurrentMonth
                   ? `Restam ${dailyAllowance.daysLeft} dias neste mês`
                   : 'Média diária para o mês selecionado'}
               </p>
-              <p className="text-[11px] text-emerald-200/80 mt-0.5">
+              <p className="text-[11px] text-emerald-200 mt-0.5">
                 {balance >= 0
-                  ? 'Mantenha esse teto para fechar no azul'
-                  : 'Gastos superando as entradas neste mês'}
+                  ? 'Dentro do planejamento previsto'
+                  : 'Despesas superando as receitas'}
               </p>
             </div>
           </div>
-          {/* Decoração sutil de fundo */}
-          <div className="absolute -right-8 -bottom-10 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
         </div>
       )}
 
-      {/* Grid com os 4 Cards Principais */}
+      {/* Grid com os 4 Cards Principais (Sem ícones) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <ModernCard
           label="Rendas do mês"
           sub="recebidas + previstas"
           value={formatBRL(totalIncome)}
-          icon="income"
-          accent="text-emerald-700"
+          accent="text-[#006437]"
         />
         <ModernCard
           label="Despesas do mês"
           sub="pagas + pendentes"
           value={formatBRL(totalExpense)}
-          icon="expense"
           accent="text-rose-700"
         />
         <ModernCard
           label="Saldo previsto"
-          sub="não é o saldo bancário"
+          sub="rendas − despesas"
           value={formatBRL(balance)}
-          icon="balance"
-          accent={balance < 0 ? 'text-rose-600' : 'text-emerald-700'}
+          accent={balance < 0 ? 'text-rose-600' : 'text-[#006437]'}
           highlight
         />
 
-        {/* Card de Comprometimento com Barra de Progresso */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col justify-between">
+        {/* Card de Comprometimento com Barra de Progresso Alviverde */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <p className="text-[10px] sm:text-xs font-semibold tracking-wider text-slate-500 uppercase">
+              <p className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-500 uppercase">
                 Comprometido
               </p>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${progressConfig.badgeBg} ${progressConfig.textColor}`}>
+              <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${progressConfig.badgeBg} ${progressConfig.textColor}`}>
                 {progressConfig.label}
               </span>
             </div>
@@ -92,7 +87,6 @@ export default function SummaryCards({
             </p>
           </div>
 
-          {/* Barra de Progresso Visual Elegante */}
           <div className="mt-2.5">
             <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
@@ -101,40 +95,30 @@ export default function SummaryCards({
               />
             </div>
             <p className="text-[10px] text-slate-400 mt-1">
-              {pct > 100 ? 'Orçamento estourado' : 'das rendas consideradas'}
+              {pct > 100 ? 'Orçamento estourado' : 'da renda considerada'}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Mini-cards horizontais: Falta Receber vs Falta Pagar */}
+      {/* Mini-cards horizontais: Falta Receber vs Falta Pagar (Sem ícones) */}
       <div className="grid sm:grid-cols-2 gap-3">
-        <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-2 shadow-2xs">
-          <div className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center font-bold text-sm shrink-0">
-              ↓
-            </span>
-            <div>
-              <p className="text-xs text-emerald-900 font-medium">Ainda a receber</p>
-              <p className="text-sm font-bold text-emerald-950 tabular-nums">{formatBRL(toReceive)}</p>
-            </div>
+        <div className="bg-[#f0f7f3] border border-[#bde1cc] rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-2 shadow-2xs">
+          <div>
+            <p className="text-xs text-[#00502c] font-semibold uppercase tracking-wider">A receber</p>
+            <p className="text-sm sm:text-base font-bold text-[#003e22] tabular-nums mt-0.5">{formatBRL(toReceive)}</p>
           </div>
-          <span className="text-xs text-emerald-800 bg-white/80 px-2.5 py-1 rounded-lg border border-emerald-200/50">
+          <span className="text-xs font-medium text-[#00502c] bg-white px-2.5 py-1 rounded-lg border border-[#bde1cc]/60">
             Recebido: <strong>{formatBRL(receivedTotal)}</strong>
           </span>
         </div>
 
-        <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-2 shadow-2xs">
-          <div className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-xl bg-amber-100/80 text-amber-700 flex items-center justify-center font-bold text-sm shrink-0">
-              ↑
-            </span>
-            <div>
-              <p className="text-xs text-amber-900 font-medium">Ainda a pagar</p>
-              <p className="text-sm font-bold text-amber-950 tabular-nums">{formatBRL(toPay)}</p>
-            </div>
+        <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-2 shadow-2xs">
+          <div>
+            <p className="text-xs text-amber-900 font-semibold uppercase tracking-wider">A pagar</p>
+            <p className="text-sm sm:text-base font-bold text-amber-950 tabular-nums mt-0.5">{formatBRL(toPay)}</p>
           </div>
-          <span className="text-xs text-amber-800 bg-white/80 px-2.5 py-1 rounded-lg border border-amber-200/50">
+          <span className="text-xs font-medium text-amber-800 bg-white px-2.5 py-1 rounded-lg border border-amber-200/60">
             Pago: <strong>{formatBRL(paidTotal)}</strong>
           </span>
         </div>
@@ -143,22 +127,19 @@ export default function SummaryCards({
   );
 }
 
-function ModernCard({ label, sub, value, accent, icon, highlight = false }) {
+function ModernCard({ label, sub, value, accent, highlight = false }) {
   return (
     <div
-      className={`bg-white border rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col justify-between transition-all hover:shadow-sm ${
+      className={`bg-white border rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col justify-between transition-all ${
         highlight
-          ? 'border-emerald-600/30 ring-1 ring-emerald-600/10'
-          : 'border-slate-200/80'
+          ? 'border-[#006437]/40 ring-1 ring-[#006437]/15'
+          : 'border-slate-200/90'
       }`}
     >
       <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <p className="text-[10px] sm:text-xs font-semibold tracking-wider text-slate-500 uppercase">
-            {label}
-          </p>
-          <CardIcon type={icon} />
-        </div>
+        <p className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-500 uppercase mb-1.5">
+          {label}
+        </p>
         <p className={`text-base sm:text-2xl font-bold tabular-nums break-words ${accent}`}>
           {value}
         </p>
@@ -168,32 +149,10 @@ function ModernCard({ label, sub, value, accent, icon, highlight = false }) {
   );
 }
 
-function CardIcon({ type }) {
-  if (type === 'income') {
-    return (
-      <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
-        ↗
-      </span>
-    );
-  }
-  if (type === 'expense') {
-    return (
-      <span className="w-6 h-6 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">
-        ↘
-      </span>
-    );
-  }
-  return (
-    <span className="w-6 h-6 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center text-xs font-bold">
-      =
-    </span>
-  );
-}
-
 function getProgressTheme(pct) {
   if (pct > 100) {
     return {
-      barColor: 'bg-rose-500',
+      barColor: 'bg-rose-600',
       textColor: 'text-rose-700',
       badgeBg: 'bg-rose-100',
       label: 'Crítico',
@@ -201,16 +160,16 @@ function getProgressTheme(pct) {
   }
   if (pct >= 80) {
     return {
-      barColor: 'bg-amber-500',
+      barColor: 'bg-[#d4a017]',
       textColor: 'text-amber-800',
       badgeBg: 'bg-amber-100',
       label: 'Atenção',
     };
   }
   return {
-    barColor: 'bg-emerald-500',
-    textColor: 'text-emerald-700',
-    badgeBg: 'bg-emerald-100',
+    barColor: 'bg-[#006437]',
+    textColor: 'text-[#006437]',
+    badgeBg: 'bg-[#dcf0e4]',
     label: 'Saudável',
   };
 }
