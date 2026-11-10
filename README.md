@@ -2,7 +2,7 @@
 
 **Suas contas, mês a mês.** Planejamento financeiro pessoal com login, parcelas, cartões e sincronização entre dispositivos.
 
-[Acessar o app](https://joaoaquino-dev.github.io/financas-app/) · [Guia de uso](docs/GUIA-DE-USO.md)
+[Acessar o app](https://joaoaquino-dev.github.io/soma/) · [Guia de uso](docs/GUIA-DE-USO.md)
 
 ![Resumo mensal do Soma: rendas, despesas, saldo previsto e percentual comprometido](docs/screenshots/resumo-mensal.png)
 
