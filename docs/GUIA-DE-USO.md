@@ -7,7 +7,7 @@ Identidade visual: verde profundo `#123c2d`, verde de ação `#14613e`, verde cl
 # Finanças pessoais
 
 Planejamento mensal em React + Vite + Tailwind, publicado no GitHub Pages:
-https://joaoaquino-dev.github.io/financas-app/
+https://joaoaquino-dev.github.io/soma/
 
 ## Como usar
 
@@ -42,8 +42,8 @@ Projeto Supabase exclusivo `financas-app` (`liajnsmwmnodczdwtnhk`). A tabela `fi
 
 O app pode validar os links de confirmação/recuperação diretamente, sem depender do redirecionamento do provedor. Para abrir diretamente os links de e-mail no app, configure no painel Supabase > Authentication > URL Configuration:
 
-- Site URL: `https://joaoaquino-dev.github.io/financas-app/`
-- Redirect URL: `https://joaoaquino-dev.github.io/financas-app/`
+- Site URL: `https://joaoaquino-dev.github.io/soma/`
+- Redirect URL: `https://joaoaquino-dev.github.io/soma/`
 
 O serviço padrão de e-mail do Supabase tem limites e restringe os destinatários aos membros da organização. Para disponibilizar cadastros a outros usuários, configure um SMTP próprio em Authentication antes de divulgar. Esse projeto é separado da Pellum.
 
@@ -58,7 +58,7 @@ npm run build
 
 Configuração pública padrão em `src/lib/supabase.js`. Para outro projeto, defina `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` em `.env.local` e aplique o schema no projeto de destino.
 
-O workflow `.github/workflows/deploy.yml` continua publicando `main` no GitHub Pages, com a base `/financas-app/`. Não é necessário migrar hospedagem.
+O workflow `.github/workflows/deploy.yml` continua publicando `main` no GitHub Pages, com a base `/soma/`. Não é necessário migrar hospedagem.
 
 ### Acompanhamento
 
