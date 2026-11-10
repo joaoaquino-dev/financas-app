@@ -289,16 +289,23 @@ function Finance({ user }) {
             <Forecast data={f.data} month={month} />
 
             {/* Ferramentas de Backup e Rodapé */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              <button className="btn-secondary text-xs" onClick={exportData}>Exportar backup</button>
-              <label className={`btn-secondary text-xs cursor-pointer ${f.busy ? 'opacity-50' : ''}`}>
-                Importar backup
-                <input disabled={f.busy} className="sr-only" type="file" accept="application/json,.json" onChange={importFile} />
-              </label>
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200/80">
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className="btn-secondary text-xs" onClick={exportData}>
+                  Exportar backup (.json)
+                </button>
+                <label className={`btn-secondary text-xs cursor-pointer ${f.busy ? 'opacity-50' : ''}`}>
+                  Importar backup
+                  <input disabled={f.busy} className="sr-only" type="file" accept="application/json,.json" onChange={importFile} />
+                </label>
+              </div>
+              <p className="text-[11px] text-slate-400 font-mono">
+                Sincronizado via Supabase
+              </p>
             </div>
 
-            <p className="soma-help text-xs text-slate-400 leading-relaxed pt-2">
-              Selecione o mês em que vai pagar as contas. Em “⋯”, defina repetição e parcelamentos. Marque rendas recebidas e contas pagas. Alterações são sincronizadas automaticamente.
+            <p className="text-xs text-slate-400 leading-relaxed pt-1">
+              Selecione o mês em que vai pagar as contas. Em “⋯”, defina repetição e parcelamentos. Marque rendas recebidas e contas pagas. Alterações são sincronizadas automaticamente na nuvem.
             </p>
           </>
         )}

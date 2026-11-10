@@ -7,6 +7,16 @@ export default {
         sans: ['DM Sans', 'sans-serif'],
         mono: ['DM Mono', 'monospace'],
       },
+      boxShadow: {
+        '2xs': '0 1px 2px 0 rgba(0, 42, 23, 0.04)',
+        xs: '0 1px 3px 0 rgba(0, 42, 23, 0.06)',
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      scale: {
+        '98': '0.98',
+      },
       colors: {
         palmeiras: {
           50: '#f0f7f3',
